@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "rotcrier_general",
+    "password": "Smitty1!",
+    "database": "rotcrier",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "rotcrier_general",
+    "password": null,
+    "database": "rotcrier",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "rotcrier_general",
+    "password": null,
+    "database": "rotcrier",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
