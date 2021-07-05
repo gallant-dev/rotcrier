@@ -11,17 +11,28 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Post.belongsTo(models.User);
+      Post.belongsTo(models.Section);
     }
   };
   Post.init({
-    title: DataTypes.STRING,
-    section: DataTypes.STRING,
-    user: DataTypes.STRING,
-    body: DataTypes.STRING,
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    body: {
+      type: DataTypes.STRING(2000),
+      allowNull: false
+    },
     visits: DataTypes.INTEGER,
-    crap: DataTypes.INTEGER
+    shits: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,  
+    }
   }, {
     sequelize,
+    tableName: 'posts',
     modelName: 'Post',
   });
   return Post;

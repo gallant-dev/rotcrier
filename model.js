@@ -92,7 +92,7 @@ app.delete('/users', async(req, res) => {
 })
 //The above is HTTP requests for User data.
 
-//The below is HTTP requsets for Section data.
+//The below is HTTP requests for Section data.
 app.post('/sections', async(req, res) => {
     const { title, description, visits, UserId } = req.body;
     
@@ -161,6 +161,83 @@ app.delete('/sections', async(req, res) => {
             }
           });
         return res.json(section);
+    }
+    catch(error){
+        return res.status(500).json(error);
+    }
+})
+//The above is HTTP requests for Section data.
+
+//The below is HTTP requests for Posts data.
+app.post('/posts', async(req, res) => {
+    const { title, body, visits, shit, UserId, SectionId } = req.body;
+    
+    const titleQuery = await Post.findAll({
+        where: {
+            title: title
+        }
+    });
+
+    if(titleQuery.length > 0) {
+        return res.status(400).json("The title of this Post is taken, please try another.");
+    }
+    else{
+        try{
+            const post = await Post.create({ title, body, visits, shit, UserId, SectionId});
+            return res.json(post);
+        }
+        catch(error){
+            return res.status(500).json(error);
+        }
+
+    }
+})
+
+app.get('/posts/:title', async(req, res) => {
+    const { title } = req.params;
+    const post = await Post.findAll({
+        where: {
+            title: title
+        }
+    });
+    if(post.length > 0){
+        return res.json(post);
+    }
+    else {
+        return res.status(404).json("Post not found.")
+    }
+})
+
+app.put('/posts', async(req, res) => {
+    const { title, body, visits, shit, UserId } = req.body;
+    try{
+        const post = await Post.update({ 
+            title: title,
+            body: body,
+            visits: visits,
+            shit: shit, 
+            UserId: UserId
+            }, {
+            where: {
+                title: title
+            }
+          });
+        return res.json(post);
+    }
+    catch(error){
+        return res.status(500).json(error);
+    }
+})
+
+app.delete('/posts', async(req, res) => {
+    const { title } = req.body;
+    try{
+        const post = await Post.destroy({
+            where: {
+                title: title
+            }
+          });
+        return res.json(post);
     }
     catch(error){
         return res.status(500).json(error);

@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Section.belongsTo(models.User);
 
+      Section.hasMany(models.Post);
     }
   };
   Section.init({
