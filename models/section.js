@@ -11,15 +11,28 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Section.belongsTo(models.User);
+
     }
   };
   Section.init({
-    title: DataTypes.STRING,
-    user: DataTypes.STRING,
-    description: DataTypes.STRING,
-    visits: DataTypes.INTEGER
+    title: { 
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
+    description: { 
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    visits: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    }
   }, {
     sequelize,
+    tableName: 'sections',
     modelName: 'Section',
   });
   return Section;
