@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 app.use(express.json());
 
-//The following is HTTP requests for User data.
+//The following is HTTP CRUD requests for User data.
 app.post('/users', async(req, res) => {
     const { displayName, email, salt, password } = req.body;
     
@@ -53,6 +53,41 @@ app.get('/users/:displayName', async(req, res) => {
     }
     else {
         return res.status(404).json("User not found.")
+    }
+})
+
+app.put('/users', async(req, res) => {
+    const { displayName, email, salt, password } = req.body;
+    try{
+        const user = await User.update({ 
+            displayName: displayName,
+            email: email,
+            salt: salt, 
+            password: password
+            }, {
+            where: {
+            displayName: displayName
+            }
+          });
+        return res.json(user);
+    }
+    catch(error){
+        return res.status(500).json(error);
+    }
+})
+
+app.delete('/users', async(req, res) => {
+    const { displayName } = req.body;
+    try{
+        const user = await User.destroy({
+            where: {
+              displayName: displayName
+            }
+          });
+        return res.json(user);
+    }
+    catch(error){
+        return res.status(500).json(error);
     }
 })
 //The above is HTTP requests for User data.
