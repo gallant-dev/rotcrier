@@ -131,6 +131,41 @@ app.get('/sections/:title', async(req, res) => {
         return res.status(404).json("Section not found.")
     }
 })
+
+app.put('/sections', async(req, res) => {
+    const { title, description, visits, UserId } = req.body;
+    try{
+        const section = await Section.update({ 
+            title: title,
+            description: description,
+            visits: visits, 
+            UserId: UserId
+            }, {
+            where: {
+                title: title
+            }
+          });
+        return res.json(section);
+    }
+    catch(error){
+        return res.status(500).json(error);
+    }
+})
+
+app.delete('/sections', async(req, res) => {
+    const { title } = req.body;
+    try{
+        const section = await Section.destroy({
+            where: {
+                title: title
+            }
+          });
+        return res.json(section);
+    }
+    catch(error){
+        return res.status(500).json(error);
+    }
+})
 //The above is HTTP requests for Section data.
 
 const port = process.env.PORT || 3000;
