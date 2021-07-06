@@ -245,6 +245,87 @@ app.delete('/posts', async(req, res) => {
 })
 //The above is HTTP requests for Section data.
 
+//The below is HTTP requests for Comment data.
+app.post('/comments', async(req, res) => {
+    const { body, shit, UserId, PostId, CommentId } = req.body;
+    
+    const commentQuery = await Comment.findAll({
+        where: {
+            body: body,
+            UserId: UserId,
+            PostId: PostId,
+            CommentId: CommentId
+        }
+    });
+
+    if(commentQuery.length > 0) {
+        return res.status(400).json("Cannot post a duplicate comment.");
+    }
+    else{
+        try{
+            const comment = await Comment.create({ body, shit, UserId, PostId, CommentId});
+            return res.json(comment);
+        }
+        catch(error){
+            return res.status(500).json(error);
+        }
+
+    }
+})
+
+app.get('/comments/:commentId', async(req, res) => {
+    const { commentId } = req.params;
+    const comment = await Comment.findAll({
+        where: {
+            id: commentId
+        }
+    });
+    if(comment.length > 0){
+        return res.json(comment);
+    }
+    else {
+        return res.status(404).json("Comment not found.")
+    }
+})
+
+app.put('/comments/:id', async(req, res) => {
+    const { id } = req.params;
+    const { body, shit, UserId, PostId, CommentId } = req.body;
+    try{
+        const comment = await Comment.update({ 
+            body: body,
+            shit: shit,
+            UserId: UserId,
+            PostId: PostId, 
+            CommentId: CommentId
+            }, {
+            where: {
+                id: id
+            }
+          });
+        return res.json(comment);
+    }
+    catch(error){
+        return res.status(500).json(error);
+    }
+})
+
+app.delete('/comments', async(req, res) => {
+    const { id } = req.body;
+    try{
+        const comment = await Comment.destroy({
+            where: {
+                id: id
+            }
+          });
+        return res.json(comment);
+    }
+    catch(error){
+        return res.status(500).json(error);
+    }
+})
+//The above is HTTP requests for Comment data.
+
 const port = process.env.PORT || 3000;
 app.listen(port, async () =>{
     console.log(`Listening on port ${port}!`)

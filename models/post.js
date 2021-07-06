@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Post.belongsTo(models.User);
       Post.belongsTo(models.Section);
+
+      Post.hasMany(models.Comment);
     }
   };
   Post.init({
@@ -25,10 +27,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(2000),
       allowNull: false
     },
-    visits: DataTypes.INTEGER,
+    visits: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false  
+    },
     shits: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,  
+      defaultValue: 0,
+      allowNull: false  
     }
   }, {
     sequelize,
