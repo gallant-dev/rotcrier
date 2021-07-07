@@ -248,6 +248,13 @@ app.delete('/posts', async(req, res) => {
 //The below is HTTP requests for Comment data.
 app.post('/comments', async(req, res) => {
     const { body, shit, UserId, PostId, CommentId } = req.body;
+
+    if(PostId && CommentId){
+        return res.status(400).json("Can only comment on a Post or Comment, not both.");
+    }
+    if(!PostId && !CommentId){
+        return res.status(400).json("Must comment on either a Post or Comment.");
+    }
     
     const commentQuery = await Comment.findAll({
         where: {
