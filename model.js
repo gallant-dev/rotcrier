@@ -1,4 +1,4 @@
-const { sequelize, User, Section, Post, Comment } = require('./models');
+const { sequelize, User, Section, Post, Comment, Shit } = require('./models');
 var express = require('express');
 
 var app = express();
@@ -325,6 +325,142 @@ app.delete('/comments', async(req, res) => {
     }
 })
 //The above is HTTP requests for Comment data.
+
+//The below is HTTP requests for Shit data.
+app.post('/shits', async(req, res) => {
+    const { UserId, PostId, CommentId } = req.body;
+
+    if(PostId && CommentId){
+        return res.status(400).json("Can only give a shit about a Post or Comment, not both.");
+    }
+    if(!PostId && !CommentId){
+        return res.status(400).json("Must give a shit about either a Post or Comment.");
+    }
+    
+    const shitQuery = await Shit.findAll({
+        where: {
+            UserId: UserId,
+            PostId: PostId,
+            CommentId: CommentId
+        }
+    });
+
+    if(shitQuery.length > 0) {
+        return res.status(400).json("Cannot give two shits.");
+    }
+    else{
+        try{
+            const shit = await Shit.create({UserId, PostId, CommentId});
+            return res.json(shit);
+        }
+        catch(error){
+            return res.status(500).json(error);
+        }
+
+    }
+})
+
+app.get('/shits/post/:PostId', async(req, res) => {
+    const {  PostId } = req.params;
+    const shit = await Shit.findAll({
+        where: {
+            PostId: PostId
+        }
+    });
+
+    if(shit.length > 0){
+        return res.json(shit);
+    }
+    else {
+        return res.status(404).json("No shits given.")
+    }
+})
+
+app.get('/shits/comment/:CommentId', async(req, res) => {
+    const {  CommentId } = req.params;
+    const shit = await Shit.findAll({
+        where: {
+            CommentId: CommentId
+        }
+    });
+
+    if(shit.length > 0){
+        return res.json(shit);
+    }
+    else {
+        return res.status(404).json("No shits given.")
+    }
+})
+
+app.get('/shits/user/:UserId/given', async(req, res) => {
+    const { UserId } = req.params;
+    const shit = await Shit.findAll({
+        where: {
+            UserId: UserId
+        }
+    });
+
+    if(shit.length > 0){
+        return res.json(shit);
+    }
+    else {
+        return res.status(404).json("No shits given.")
+    }
+})
+
+app.get('/shits/user/:UserId/comments/recieved', async(req, res) => {
+    const { UserId } = req.params;
+    const shit = await Shit.findAll({
+        include: [{
+            model: Comment,
+            where: {
+                UserId: UserId
+            }
+        }]
+    })
+
+    if(shit.length > 0){
+        return res.json(shit);
+    }
+    else {
+        return res.status(404).json("No shits given.")
+    }
+})
+
+app.get('/shits/user/:UserId/posts/recieved', async(req, res) => {
+    const { UserId } = req.params;
+    const shit = await Shit.findAll({
+        include: [{
+            model: Post,
+            where: {
+                UserId: UserId
+            }
+        }]
+    })
+
+    if(shit.length > 0){
+        return res.json(shit);
+    }
+    else {
+        return res.status(404).json("No shits given.")
+    }
+})
+
+app.delete('/shits', async(req, res) => {
+    const { id } = req.body;
+    try{
+        const shit = await Shit.destroy({
+            where: {
+                id: id
+            }
+          });
+        return res.json(shit);
+    }
+    catch(error){
+        return res.status(500).json(error);
+    }
+})
+//The above is HTTP requests for Shit data.
 
 const port = process.env.PORT || 3000;
 app.listen(port, async () =>{

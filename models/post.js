@@ -11,10 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Post.belongsTo(models.User);
-      Post.belongsTo(models.Section);
+      Post.belongsTo(models.User)
+      Post.belongsTo(models.Section)
 
-      Post.hasMany(models.Comment);
+      Post.hasMany(models.Comment)
+      Post.hasMany(models.Shit)
     }
   };
   Post.init({
@@ -26,16 +27,6 @@ module.exports = (sequelize, DataTypes) => {
     body: {
       type: DataTypes.STRING(2000),
       allowNull: false
-    },
-    visits: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-      allowNull: false  
-    },
-    shits: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-      allowNull: false  
     }
   }, {
     sequelize,

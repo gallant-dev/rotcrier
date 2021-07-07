@@ -11,20 +11,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Comment.belongsTo(models.User);
-      Comment.belongsTo(models.Post);
-      Comment.belongsTo(models.Comment);
-      Comment.hasMany(models.Comment);
+      Comment.belongsTo(models.User)
+      Comment.belongsTo(models.Post)
+      Comment.belongsTo(models.Comment)
+
+      Comment.hasMany(models.Comment)
+      Comment.hasMany(models.Shit)
     }
   };
   Comment.init({
     body: {
       type: DataTypes.STRING(1000),
-      allowNull: false
-    },
-    crap: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
       allowNull: false
     }
   }, {
