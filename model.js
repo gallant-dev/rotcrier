@@ -1,13 +1,16 @@
 const { sequelize, User, Section, Post, Comment, Shit } = require('./models');
 var express = require('express');
+var crypto = require('crypto');
+var randomstring = require("randomstring");
 
 var app = express();
 app.use(express.json());
 
-//The following is HTTP CRUD requests for User data.
+
+//The following is HTTP requests for User data.
 app.post('/users', async(req, res) => {
-    const { displayName, email, salt, password } = req.body;
-    
+    const { displayName, email, password } = req.body;
+
     const nameQuery = await User.findAll({
         where: {
             displayName: displayName
@@ -31,8 +34,12 @@ app.post('/users', async(req, res) => {
     }
     else{
         try{
-            const user = await User.create({ displayName, email, salt, password });
-            return res.json(user);
+            const iv = crypto.randomBytes(32)
+            const key = crypto.randomBytes(32)
+            let cypher = crypto.createCipheriv('aes-256-gcm', Buffer.from(key), iv)
+            const hashedPassword = cypher.update(password)
+            const user = await User.create({ displayName, email, salt: iv.toString('hex'), password: hashedPassword.toString('hex') });
+            return res.json(user.displayName+' created!');
         }
         catch(error){
             return res.status(500).json(error);
