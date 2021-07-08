@@ -559,7 +559,7 @@ app.delete('/shits', async(req, res) => {
 })
 //The above is HTTP requests for Shit data.
 
-const port = process.env.PORT || 3000;
+const port = 3000
 app.listen(port, async () =>{
     console.log(`Listening on port ${port}!`)
     await sequelize.sync({ force: true}); // Use force: true if table needs to modified.
