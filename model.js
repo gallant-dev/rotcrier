@@ -1,11 +1,14 @@
 const { sequelize, User, Section, Post, Comment, Shit } = require('./models');
+const fs = require('fs')
 var express = require('express');
 var crypto = require('crypto');
-var randomstring = require("randomstring");
+const { isValidElement } = require('react');
 
 var app = express();
 app.use(express.json());
 
+var key = crypto.randomBytes(32)
+var iv = crypto.randomBytes(32)
 
 //The following is HTTP requests for User data.
 app.post('/users', async(req, res) => {
@@ -34,17 +37,98 @@ app.post('/users', async(req, res) => {
     }
     else{
         try{
-            const iv = crypto.randomBytes(32)
-            const key = crypto.randomBytes(32)
-            let cypher = crypto.createCipheriv('aes-256-gcm', Buffer.from(key), iv)
-            const hashedPassword = cypher.update(password)
-            const user = await User.create({ displayName, email, salt: iv.toString('hex'), password: hashedPassword.toString('hex') });
-            return res.json(user.displayName+' created!');
+            //Generate random salt for user to be stored with the password in the database.
+            const salt = crypto.randomBytes(32).toString('hex')
+            
+            //Generate the key using the password and the salt. For aes-256-gcm it needs to be 32 bytes. 
+            crypto.scrypt(password, salt, 32, (err, key) => {
+              if (err) throw err;
+
+              //Get the initial vector from the local filesystem.
+              fs.readFile('ciphertext.json', 'utf8', async(error, data) => {
+                  if(error){
+                      console.error(error)
+                      return
+                  }
+
+                  //Parse the data inside the file to convert it to a JSON object
+                  const iv = JSON.parse(data).iv
+
+                  //Create the cipher using the key generated and the iv obtained from the
+                  //local file system.
+                  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
+                  
+                  //Use cipher update to update the cipher using utf8 to hex as output.
+                  let encrypted = cipher.update(salt, 'utf8', 'hex')
+                  //Finalize the cipher object in hex.
+                  encrypted += cipher.final('hex')
+  
+                  const user = await User.create({
+                      displayName: displayName,
+                      email, 
+                      salt: salt, 
+                      password: encrypted
+                  });
+                  return res.json(user.displayName+' created!')
+                })
+            });
         }
         catch(error){
             return res.status(500).json(error);
         }
 
+    }
+})
+
+app.post('/users/login', async(req, res) => {
+    const { displayName, password } = req.body;
+
+    const nameQuery = await User.findAll({
+        where: {
+            displayName: displayName
+        }
+    })
+
+    if(nameQuery.length == 0){
+        return res.status(400).json("Display name not found.")
+    }
+
+    try{
+        //Obtain the previously generated and stored salt
+        const salt =  nameQuery[0].salt
+            
+        //Use the previously stored salt and the password entered by the user to generate key.
+        crypto.scrypt(password, salt, 32, (err, key) => {
+            if (err) throw err;
+
+            //Obtain the stored iv from the local file system.
+            fs.readFile('ciphertext.json', 'utf8', async(error, data) => {
+                if(error){
+                    console.error(error)
+                    return
+                }
+                //Parse the stored iv into a JSON object.
+                const iv = JSON.parse(data).iv
+                //Create a cipher using the generated key and the obtained iv.
+                const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+                
+                //Update cipher using salt with utf8 as input and hex as output.
+                let encrypted = cipher.update(salt, 'utf8', 'hex');
+
+                //Finalize the encryption using hex.
+                encrypted += cipher.final('hex');
+
+                //If the new encrypted password is not equal to the stored encrypted password
+                //the login attempt fails.
+                if(encrypted != nameQuery[0].password){
+                    return res.status(401).json('Invalid credentials. Please try again.')
+                }
+                return res.json(nameQuery[0].displayName);
+              })
+          });
+    }
+    catch(error){
+        return res.status(500).json(error);
     }
 })
 
