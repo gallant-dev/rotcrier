@@ -2,7 +2,6 @@ const { sequelize, User, Section, Post, Comment, Shit } = require('./models');
 const fs = require('fs')
 var express = require('express');
 var crypto = require('crypto');
-const { isValidElement } = require('react');
 
 var app = express();
 app.use(express.json());
