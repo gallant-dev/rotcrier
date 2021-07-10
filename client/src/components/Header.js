@@ -1,6 +1,9 @@
 import { Navbar, Nav, NavDropdown, Form, FormControl, Button } from 'react-bootstrap'
+import SignUp from './SignUp'
+import { useState } from 'react'
 
 function Header(props) {
+    const [loggedIn, setLoggedIn] = useState(false)
 
 
     return (
@@ -14,7 +17,17 @@ function Header(props) {
             <NavDropdown.Item href="#action/3.3">New Posts</NavDropdown.Item>
         </NavDropdown>
     </Nav>
-    <Nav>
+
+    <Nav className="justify-content-end">
+      <Nav.Item>
+        <Nav.Link href="#sign-in">Sign in</Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <SignUp />
+      </Nav.Item>
+    </Nav>
+    </Navbar.Collapse>
+    <Nav className="content-justify-center">
     <Form className="d-flex">
       <FormControl
         type="search"
@@ -25,13 +38,8 @@ function Header(props) {
       <Button variant="outline-success">Search</Button>
     </Form>
     </Nav>
-    <Nav>
-      <Nav.Link href="#sign-in">Sign in</Nav.Link>
-    </Nav>
-    <Nav>
-      <Nav.Link href="#sign-up">Sign up</Nav.Link>
-    </Nav>
-  </Navbar.Collapse>
+
+
 </Navbar>
     );
 }

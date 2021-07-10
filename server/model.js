@@ -68,7 +68,7 @@ app.post('/users', async(req, res) => {
                       salt: salt, 
                       password: encrypted
                   });
-                  return res.json(user.displayName+' created!')
+                  return res.json(user.displayName)
                 })
             });
         }
