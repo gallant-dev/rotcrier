@@ -3,9 +3,7 @@ import { Button, Modal, Form } from 'react-bootstrap'
 
 function SignUp(props) {
     const [show, setShow] = useState(false)
-    const [displayName, setDisplayName] = useState("Default")
     const [warning, setWarning] = useState("")
-    const [displayNameSubtextColour, setDisplayNameSubtextColour] = useState()
 
     const handleClose = () => {
         setWarning("")
@@ -13,8 +11,6 @@ function SignUp(props) {
     }
 
     const handleShow = () => setShow(true);
-
-    const handleRespone = (response) => setDisplayName(response)
 
     const submitHandler = async(event) => {
         const form = event.elements
@@ -44,7 +40,7 @@ function SignUp(props) {
                 return Promise.reject(error);
             }
             sessionStorage.setItem('displayName', data)
-            setDisplayName(data);
+            sessionStorage.getItem('password', form.passwordInput.value)
             console.log(data);
         })
         .catch(error => {

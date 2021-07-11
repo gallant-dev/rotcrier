@@ -6,9 +6,6 @@ var crypto = require('crypto');
 var app = express();
 app.use(express.json());
 
-var key = crypto.randomBytes(32)
-var iv = crypto.randomBytes(32)
-
 //The following is HTTP requests for User data.
 app.post('/users', async(req, res) => {
     const { displayName, email, password } = req.body;
