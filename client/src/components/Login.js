@@ -3,7 +3,6 @@ import { Button, Modal, Form } from 'react-bootstrap'
 
 function Login(props) {
     const [show, setShow] = useState(false)
-    const [displayName, setDisplayName] = useState("Default")
     const [warning, setWarning] = useState("")
 
     const handleClose = () => {
@@ -12,8 +11,6 @@ function Login(props) {
     }
 
     const handleShow = () => setShow(true);
-
-    const handleRespone = (response) => setDisplayName(response)
 
     const submitHandler = async(event) => {
         const form = event.elements
@@ -42,7 +39,7 @@ function Login(props) {
                 return Promise.reject(error);
             }
             sessionStorage.setItem('displayName', data)
-            setDisplayName(data);
+            sessionStorage.setItem('password', form.passwordInput.value)
             console.log(data);
         })
         .catch(error => {
