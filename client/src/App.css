@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.btn-primary {
+  background-color: grey;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  color: #fff;
+  background-color: olive;
+  border-color: olive;
+}
+
+.navbar-nav {
+  margin-top: 0.25em;
+}
