@@ -15,7 +15,8 @@ function Login(props) {
     const handleShow = () => setShow(true);
 
     const submitHandler = async(event) => {
-        const form = event.elements
+        event.preventDefault();
+        const form = event.target.elements
         await fetch('/users/login', {
             method: 'POST',
             headers: {
@@ -41,7 +42,7 @@ function Login(props) {
                 return Promise.reject(error);
             }
             sessionStorage.setItem('displayName', data)
-            props.onLogin(true);
+            props.onLogin();
             console.log(data);
         })
         .catch(error => {
@@ -65,7 +66,7 @@ function Login(props) {
           <Modal.Title>Sign in</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form onSubmit={event =>submitHandler(event.target)}>
+            <Form onSubmit={event =>submitHandler(event)}>
             <Form.Group controlId="displayNameInput">
                 <Form.Label>Display name</Form.Label>
                 <Form.Control type="text" placeholder="Enter display name" />

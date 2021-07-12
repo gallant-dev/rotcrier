@@ -4,9 +4,14 @@ import AccountControls from './AccountControls'
 
 function Header(props) {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [focus, setFocus] = useState("Home")
 
     const loginHandler = () => {
         setIsLoggedIn(true)
+    }
+
+    const focusHandler = (value) => {
+        setFocus(value)
     }
 
 
@@ -16,9 +21,10 @@ function Header(props) {
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
   <Navbar.Collapse id="responsive-navbar-nav">
     <Nav className="mr-auto">
-        <NavDropdown title="Home" id="collapsible-nav-dropdown">
-            <NavDropdown.Item href="#action/3.2">Top Posts</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">New Posts</NavDropdown.Item>
+        <NavDropdown title={focus} id="collapsible-nav-dropdown">
+            {focus != "Home" && <NavDropdown.Item onClick={event => focusHandler("Home")}>Home</NavDropdown.Item>}
+            <NavDropdown.Item onClick={event => focusHandler("Top Posts")}>Top Posts</NavDropdown.Item>
+            <NavDropdown.Item  onClick={event => focusHandler("New Posts")}>New Posts</NavDropdown.Item>
         </NavDropdown>
     </Nav>
 

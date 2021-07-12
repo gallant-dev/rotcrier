@@ -4,7 +4,7 @@ var express = require('express');
 var crypto = require('crypto');
 
 var app = express();
-app.use(express.json());
+app.use([express.json()]);
 
 //The following is HTTP requests for User data.
 app.post('/users', async(req, res) => {
