@@ -13,7 +13,8 @@ function SignUp(props) {
     const handleShow = () => setShow(true);
 
     const submitHandler = async(event) => {
-        const form = event.elements
+        event.preventDefault();
+        const form = event.target.elements
         await fetch('/users', {
             method: 'POST',
             headers: {
@@ -40,7 +41,7 @@ function SignUp(props) {
                 return Promise.reject(error);
             }
             sessionStorage.setItem('displayName', data)
-            sessionStorage.getItem('password', form.passwordInput.value)
+            props.onLogin();
             console.log(data);
         })
         .catch(error => {
@@ -64,7 +65,7 @@ function SignUp(props) {
           <Modal.Title>Sign up</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form onSubmit={event =>submitHandler(event.target)}>
+            <Form onSubmit={event =>submitHandler(event)}>
             <Form.Group controlId="displayNameInput">
                 <Form.Label>Display name</Form.Label>
                 <Form.Control type="text" placeholder="Enter display name" />

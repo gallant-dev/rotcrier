@@ -5,6 +5,8 @@ function Login(props) {
     const [show, setShow] = useState(false)
     const [warning, setWarning] = useState("")
 
+    const loginHandler = props.loginHandler
+
     const handleClose = () => {
         setWarning("")
         setShow(false)
@@ -39,7 +41,7 @@ function Login(props) {
                 return Promise.reject(error);
             }
             sessionStorage.setItem('displayName', data)
-            sessionStorage.setItem('password', form.passwordInput.value)
+            props.onLogin(true);
             console.log(data);
         })
         .catch(error => {

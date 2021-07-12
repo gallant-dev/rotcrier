@@ -1,10 +1,13 @@
 import { Navbar, Nav, NavDropdown, Form, FormControl, Button, ButtonGroup } from 'react-bootstrap'
-import SignUp from './SignUp'
-import Login from './Login'
 import { useState } from 'react'
+import AccountControls from './AccountControls'
 
 function Header(props) {
-    const [loggedIn, setLoggedIn] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+    const loginHandler = () => {
+        setIsLoggedIn(true)
+    }
 
 
     return (
@@ -13,17 +16,14 @@ function Header(props) {
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
   <Navbar.Collapse id="responsive-navbar-nav">
     <Nav className="mr-auto">
-        <NavDropdown title="Home" id="collasible-nav-dropdown">
+        <NavDropdown title="Home" id="collapsible-nav-dropdown">
             <NavDropdown.Item href="#action/3.2">Top Posts</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.3">New Posts</NavDropdown.Item>
         </NavDropdown>
     </Nav>
 
-    <Nav className>
-        <ButtonGroup>
-            <Login />
-            <SignUp />
-        </ButtonGroup>
+    <Nav>
+        <AccountControls setLoggedIn={loginHandler}/>
     </Nav>
     </Navbar.Collapse>
     <Nav>
