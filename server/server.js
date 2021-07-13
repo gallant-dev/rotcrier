@@ -1,10 +1,29 @@
 const { sequelize, User, Section, Post, Comment, Shit } = require('./models');
 const fs = require('fs')
 var express = require('express');
+var session = require('express-session')
+const SessionStore = require('express-session-sequelize')(session.Store);
 var crypto = require('crypto');
 
+const sequelizeSessionStore = new SessionStore({
+    db: sequelize,
+});
+
 var app = express();
-app.use([express.json()]);
+app.set('trust proxy', 1)
+app.use([
+    express.json(),
+    session({
+        store: sequelizeSessionStore,
+        genid: function(req){
+            return crypto.randomUUID()
+        },
+        secret: crypto.randomBytes(16).toString('hex'),
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: 'auto' }
+    })
+]);
 
 //The following is HTTP requests for User data.
 app.post('/users', async(req, res) => {
@@ -64,8 +83,12 @@ app.post('/users', async(req, res) => {
                       email, 
                       salt: salt, 
                       password: encrypted
-                  });
-                  return res.json(user.displayName)
+                  })
+                  req.session.data = user.displayName;
+                  return res.json({
+                    displayName: req.session.data,
+                    session: req.session.id
+                    });
                 })
             });
         }
@@ -118,7 +141,11 @@ app.post('/users/login', async(req, res) => {
                 if(encrypted != nameQuery[0].password){
                     return res.status(401).json('Invalid credentials. Please try again.')
                 }
-                return res.json(nameQuery[0].displayName);
+                req.session.data = nameQuery[0].displayName;
+                  return res.json({
+                    displayName: req.session.data,
+                    session: req.session.id
+                    });
               })
           });
     }
@@ -143,23 +170,27 @@ app.get('/users/:displayName', async(req, res) => {
 })
 
 app.put('/users', async(req, res) => {
-    const { displayName, email, salt, password } = req.body;
-    try{
-        const user = await User.update({ 
-            displayName: displayName,
-            email: email,
-            salt: salt, 
-            password: password
-            }, {
-            where: {
-            displayName: displayName
-            }
-          });
-        return res.json(user);
+    const { displayName, email, salt, password, sessionId } = req.body;
+    const providedSession = store.get(sessionId)
+    if(providedSession && providedSession.data == displayName){
+        try{
+            const user = await User.update({ 
+                displayName: displayName,
+                email: email,
+                salt: salt, 
+                password: password
+                }, {
+                where: {
+                displayName: displayName
+                }
+              });
+            return res.json(user);
+        }
+        catch(error){
+            return res.status(500).json(error);
+        }
     }
-    catch(error){
-        return res.status(500).json(error);
-    }
+    return res.json("Request denied: invalid session information");
 })
 
 app.delete('/users', async(req, res) => {

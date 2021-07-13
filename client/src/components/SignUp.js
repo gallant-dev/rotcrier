@@ -40,7 +40,8 @@ function SignUp(props) {
                 setWarning(data);
                 return Promise.reject(error);
             }
-            sessionStorage.setItem('displayName', data)
+            sessionStorage.setItem('displayName', data.displayName)
+            sessionStorage.setItem('session', data.session)
             props.onLogin();
             console.log(data);
         })
