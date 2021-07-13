@@ -10,6 +10,11 @@ function Header(props) {
         setIsLoggedIn(true)
     }
 
+    const logoutHandler  = () => {
+        setIsLoggedIn(false)
+        sessionStorage.clear()
+    }
+
     const focusHandler = (value) => {
         setFocus(value)
     }
@@ -29,7 +34,7 @@ function Header(props) {
     </Nav>
 
     <Nav>
-        <AccountControls setLoggedIn={loginHandler}/>
+        <AccountControls setLoggedIn={loginHandler} setLoggedOut={logoutHandler}/>
     </Nav>
     </Navbar.Collapse>
     <Nav>

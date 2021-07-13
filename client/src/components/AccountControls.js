@@ -12,6 +12,11 @@ function AccountControls(props) {
         props.setLoggedIn()
     }
 
+    const userLoggedout = () => {
+        setIsLoggedIn(false);
+        props.setLoggedOut()
+    }
+
     if(!isLoggedIn){
         return (
             <ButtonGroup>
@@ -21,7 +26,7 @@ function AccountControls(props) {
         );
     }
     return (
-        <UserSettings />
+        <UserSettings onLogout={userLoggedout}/>
     );
 }
 

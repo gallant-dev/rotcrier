@@ -154,6 +154,15 @@ app.post('/users/login', async(req, res) => {
     }
 })
 
+app.post('/users/logout', async(req, res) => {
+    const { displayName, sessionId } = req.body;
+    sequelizeSessionStore.destroy(sessionId, (error) => {
+        return res.status(error)
+    })
+
+    return res.status(200).json("Successfully logged out")
+})
+
 app.get('/users/:displayName', async(req, res) => {
     const { displayName } = req.params;
     const user = await User.findAll({
