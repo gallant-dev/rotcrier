@@ -1,10 +1,14 @@
-import { Navbar, Nav, NavDropdown, Form, FormControl, Button, ButtonGroup } from 'react-bootstrap'
+import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap'
 import { useState } from 'react'
 import AccountControls from './AccountControls'
+import Menu from './Menu'
 
 function Header(props) {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [focus, setFocus] = useState("Home")
+
+    const focusHandler = (value) => {
+        props.onFocusChange(value)
+    }
 
     const loginHandler = () => {
         setIsLoggedIn(true)
@@ -15,22 +19,13 @@ function Header(props) {
         sessionStorage.clear()
     }
 
-    const focusHandler = (value) => {
-        setFocus(value)
-    }
-
-
     return (
 <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
   <Navbar.Brand href="#home">Rotcrier</Navbar.Brand>
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
   <Navbar.Collapse id="responsive-navbar-nav">
     <Nav className="mr-auto">
-        <NavDropdown title={focus} id="collapsible-nav-dropdown">
-            {focus != "Home" && <NavDropdown.Item onClick={event => focusHandler("Home")}>Home</NavDropdown.Item>}
-            <NavDropdown.Item onClick={event => focusHandler("Top Posts")}>Top Posts</NavDropdown.Item>
-            <NavDropdown.Item  onClick={event => focusHandler("New Posts")}>New Posts</NavDropdown.Item>
-        </NavDropdown>
+        <Menu isLoggedIn={isLoggedIn} onFocusChange={focusHandler} viewFocus={props.viewFocus} />
     </Nav>
 
     <Nav>

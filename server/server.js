@@ -220,27 +220,41 @@ app.delete('/users', async(req, res) => {
 
 //The below is HTTP requests for Section data.
 app.post('/sections', async(req, res) => {
-    const { title, description, visits, UserId } = req.body;
+    const { title, description, sessionId } = req.body;
+
+    sequelizeSessionStore.get(sessionId, async(session, error) => {
+        if(error){
+            return res.status(error)
+        }
+
+        const titleQuery = await Section.findAll({
+            where: {
+                title: title
+            }
+        });
+
+
+        const userQuery = await User.findAll({
+            where: {
+                displayName: req.session.data
+            }
+        });
     
-    const titleQuery = await Section.findAll({
-        where: {
-            title: title
+        if(titleQuery.length > 0) {
+            return res.status(400).json("The title of this section is taken, please try another.");
         }
-    });
-
-    if(titleQuery.length > 0) {
-        return res.status(400).json("The title of this section is taken, please try another.");
-    }
-    else{
-        try{
-            const section = await Section.create({ title, description, visits, UserId});
-            return res.json(section);
+        else{
+            try{
+                const UserId = userQuery[0].id
+                const section = await Section.create({ title, description, UserId});
+                return res.json(section);
+            }
+            catch(error){
+                return res.status(500).json(error);
+            }
+    
         }
-        catch(error){
-            return res.status(500).json(error);
-        }
-
-    }
+    })
 })
 
 app.get('/sections/:title', async(req, res) => {
