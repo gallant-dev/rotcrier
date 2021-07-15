@@ -86,6 +86,7 @@ app.post('/users', async(req, res) => {
                   })
                   req.session.data = user.displayName;
                   return res.json({
+                    id: user.id,
                     displayName: req.session.data,
                     session: req.session.id
                     });
@@ -101,19 +102,19 @@ app.post('/users', async(req, res) => {
 app.post('/users/login', async(req, res) => {
     const { displayName, password } = req.body;
 
-    const nameQuery = await User.findAll({
+    const nameQuery = await User.findOne({
         where: {
             displayName: displayName
         }
     })
 
-    if(nameQuery.length == 0){
+    if(!nameQuery){
         return res.status(400).json("Display name not found.")
     }
 
     try{
         //Obtain the previously generated and stored salt
-        const salt =  nameQuery[0].salt
+        const salt =  nameQuery.salt
             
         //Use the previously stored salt and the password entered by the user to generate key.
         crypto.scrypt(password, salt, 32, (err, key) => {
@@ -138,11 +139,12 @@ app.post('/users/login', async(req, res) => {
 
                 //If the new encrypted password is not equal to the stored encrypted password
                 //the login attempt fails.
-                if(encrypted != nameQuery[0].password){
+                if(encrypted != nameQuery.password){
                     return res.status(401).json('Invalid credentials. Please try again.')
                 }
-                req.session.data = nameQuery[0].displayName;
+                req.session.data = nameQuery.displayName;
                   return res.json({
+                    id: nameQuery.id,
                     displayName: req.session.data,
                     session: req.session.id
                     });

@@ -16,6 +16,7 @@ function Header(props) {
 
     const logoutHandler  = () => {
         setIsLoggedIn(false)
+        focusHandler({type: 'menu', name: 'Home'})
         sessionStorage.clear()
     }
 

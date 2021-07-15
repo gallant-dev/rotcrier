@@ -4,6 +4,7 @@ import editIcon from '../images/icons8-edit-48.png'
 
 function Section(props) {
     const [section, setSection] = useState({})
+    const [userId, setUserId] = useState()
 
     useEffect(() => {
         const fetchData = async() => {
@@ -26,6 +27,8 @@ function Section(props) {
                     const error = (data && data.message) || response.status;
                     return Promise.reject(error);
                 }
+
+                setUserId(sessionStorage.getItem('id'))
                 setSection(data)
                 console.log(data);
             })
@@ -44,12 +47,14 @@ function Section(props) {
             <p>{section.description}</p>
         </Col>
         <Col xs={1} sm={1} md={1} lg={1} xl={1}>
-        <Image className="edit"
-        width={25}
-        height={25}
-        src={editIcon}
-        alt="Edit"
-        />
+        {section.UserId == userId && 
+            <Image className="edit"
+            width={25}
+            height={25}
+            src={editIcon}
+            alt="Edit"
+            />
+        }
         </Col>
     </Row>
     );

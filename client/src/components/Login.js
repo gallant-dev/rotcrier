@@ -5,8 +5,6 @@ function Login(props) {
     const [show, setShow] = useState(false)
     const [warning, setWarning] = useState("")
 
-    const loginHandler = props.loginHandler
-
     const handleClose = () => {
         setWarning("")
         setShow(false)
@@ -41,6 +39,7 @@ function Login(props) {
                 setWarning(data);
                 return Promise.reject(error);
             }
+            sessionStorage.setItem('id', data.id)
             sessionStorage.setItem('displayName', data.displayName)
             sessionStorage.setItem('session', data.session)
             props.onLogin();
