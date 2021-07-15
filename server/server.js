@@ -171,7 +171,10 @@ app.get('/users/:displayName', async(req, res) => {
         }
     });
     if(user.length > 0){
-        return res.json(user);
+        return res.json({
+            displayName: user.displayName,
+            memberships: user.memberships
+        });
     }
     else {
         return res.status(404).json("User not found.")
@@ -234,23 +237,24 @@ app.post('/sections', async(req, res) => {
         });
 
 
-        const userQuery = await User.findAll({
+        const userQuery = await User.findOne({
             where: {
                 displayName: req.session.data
             }
         });
     
         if(titleQuery.length > 0) {
-            return res.status(400).json("The title of this section is taken, please try another.");
+            return res.status(400).json("The title of this section is taken, please try another.")
         }
         else{
             try{
-                const UserId = userQuery[0].id
-                const section = await Section.create({ title, description, UserId});
-                return res.json(section);
+                const UserId = userQuery.id
+                const section = await Section.create({ title, description, UserId })
+                userQuery.addSection(section)
+                return res.json(section)
             }
             catch(error){
-                return res.status(500).json(error);
+                return res.status(500).json(error)
             }
     
         }
@@ -264,12 +268,33 @@ app.get('/sections/:title', async(req, res) => {
             title: title
         }
     });
-    if(title.length > 0){
+    if(section.length > 0){
         return res.json(section);
     }
     else {
         return res.status(404).json("Section not found.")
     }
+})
+
+app.get('/sections/:displayName/memberships', async(req, res) => {    
+    const { displayName } = req.params;
+    
+    try {
+        const user = await User.findOne({
+            where: {
+                displayName: displayName
+            }
+        });
+        if(!user){
+            return res.sendStatus(400).json("User not found.")
+        }
+        const sections = await user.getSections()
+        return res.json(sections)
+    }
+    catch(error) {
+        return res.json(error)
+    }
+
 })
 
 app.put('/sections', async(req, res) => {

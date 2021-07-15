@@ -11,8 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Section.belongsTo(models.User);
-      Section.hasMany(models.Post);
+      Section.hasMany(models.Post)
+      Section.belongsToMany(models.User, { 
+        through: 'User_Section'
+      })
     }
   };
   Section.init({
