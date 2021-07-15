@@ -43,7 +43,7 @@ function SectionForm(props) {
             }
             //Call the function in the parent to set behaviour after form submission, set the warning and log
             //the data to the console.
-            props.onFocusChange(data.title)
+            props.onFocusChange({type: 'section', name: data.title})
             setWarning("")
             console.log(data);
         })

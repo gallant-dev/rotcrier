@@ -263,12 +263,12 @@ app.post('/sections', async(req, res) => {
 
 app.get('/sections/:title', async(req, res) => {
     const { title } = req.params;
-    const section = await Section.findAll({
+    const section = await Section.findOne({
         where: {
             title: title
         }
     });
-    if(section.length > 0){
+    if(section){
         return res.json(section);
     }
     else {

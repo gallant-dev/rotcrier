@@ -2,8 +2,15 @@ import { NavDropdown } from 'react-bootstrap'
 import { useState, useEffect } from 'react'
 
 function Menu(props) {
-    const [alwaysVisibleSelections, setAlwaysVisibleSelection] = useState(["Home", "Top Posts", "New Posts"])
-    const [loggedInOnlySelections, setLoggedInOnlySelections] = useState(["Create a new section", "Create a new post"])
+    const alwaysVisibleSelections = [
+        {type: 'menu', name: 'Home'}, 
+        {type: 'menu', name: 'Top Posts'}, 
+        {type: 'menu', name: 'New Posts'}
+    ]
+    const loggedInOnlySelections = [
+        {type: 'menu', name: 'Create a new section'}, 
+        {type: 'menu', name: 'Create a new post'}
+    ]
     const [memberSections, setMemberSections] = useState([])
 
     useEffect(() => {
@@ -29,7 +36,12 @@ function Menu(props) {
                         const error = (data && data.message) || response.status;
                         return Promise.reject(error);
                     }
-                    const memberships = data.map(section => section.title)
+                    const memberships = data.map(section => {
+                        const item = {}
+                        item.type = 'section'
+                        item.name = section.title
+                        return item
+                    })
                     setMemberSections(memberships)
                     console.log(memberships);
                 })
@@ -48,17 +60,17 @@ function Menu(props) {
     }
 
     return(
-        <NavDropdown title={props.viewFocus} id="collapsible-nav-dropdown">
+        <NavDropdown title={props.viewFocus.name} id="collapsible-nav-dropdown">
             {alwaysVisibleSelections.map( selection => selection !== props.viewFocus &&
-                <NavDropdown.Item onClick={event => focusHandler(selection)}>{selection}</NavDropdown.Item> 
+                <NavDropdown.Item onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
             )}
             {props.isLoggedIn && <NavDropdown.Divider />}
             {props.isLoggedIn && loggedInOnlySelections.map( selection => selection !== props.viewFocus &&
-                <NavDropdown.Item onClick={event => focusHandler(selection)}>{selection}</NavDropdown.Item> 
+                <NavDropdown.Item onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
             )}
             {memberSections.length > 0 && <NavDropdown.Divider />}
             {(memberSections.length > 0) && memberSections.map( section => section !== props.viewFocus &&
-                <NavDropdown.Item onClick={event => focusHandler(section)}>{section}</NavDropdown.Item> 
+                <NavDropdown.Item onClick={event => focusHandler(section)}>{section.name}</NavDropdown.Item> 
             )}
         </NavDropdown>
     );

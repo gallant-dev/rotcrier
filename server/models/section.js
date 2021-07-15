@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Section.hasMany(models.Post)
       Section.belongsToMany(models.User, { 
-        through: 'User_Section'
+        through: 'Memberships'
       })
     }
   };
@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
     description: { 
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false
     }
   }, {
