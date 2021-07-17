@@ -40,6 +40,7 @@ function SignUp(props) {
                 setWarning(data);
                 return Promise.reject(error);
             }
+            sessionStorage.setItem('id', data.id)
             sessionStorage.setItem('displayName', data.displayName)
             sessionStorage.setItem('session', data.session)
             props.onLogin();

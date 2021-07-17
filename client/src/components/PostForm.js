@@ -2,10 +2,10 @@ import { Form, Button } from 'react-bootstrap'
 import { useState } from 'react'
 
 
-//The funcionality behind section creation. Users create sections which their peers and themselves can post
+//The funcionality behind post creation. Users create posts which their peers and themselves can post
 //things that they don't like. This form makes a fetch request to the API to confirm credentials, and create
 //a new custom section with them. 
-function SectionForm(props) {
+function PostForm(props) {
     //A default empty warning state that can be used to populate warnings displayed in response from the server.
     const [warning, setWarning] = useState("")
 
@@ -16,15 +16,17 @@ function SectionForm(props) {
         event.preventDefault();
         //Create a form object containing the elements.
         const form = event.target.elements
-        await fetch('/sections', {
+        await fetch('/posts', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                title: form.sectionTitle.value,
-                description: form.description.value,
+                title: form.postTitle.value,
+                body: form.description.value,
+                sectionTitle: form.sectionTitle.value,
+                UserId: sessionStorage.getItem('id'),
                 session: sessionStorage.getItem('session')
             }),
             credentials: 'include'
@@ -43,7 +45,7 @@ function SectionForm(props) {
             }
             //Call the function in the parent to set behaviour after form submission, set the warning and log
             //the data to the console.
-            props.onFocusChange({type: 'section', name: data.title})
+            props.onFocusChange({type: 'post', name: data.title})
             setWarning("")
             console.log(data);
         })
@@ -59,17 +61,19 @@ function SectionForm(props) {
     
     return(
         <Form onSubmit={event => submitHandler(event)}>
-            <Form.Group controlId="sectionTitle">
+            <Form.Group controlId="postTitle">
                 <Form.Label>Title</Form.Label>
-                <Form.Control type="text" placeholder="Your new section's title" />
-                <Form.Label style={{color: "red"}}>
-                    {warning}
-                </Form.Label>
+                <Form.Control required type="text" placeholder="Your new post's title" />
+
+            </Form.Group>
+            <Form.Group controlId="sectionTitle">
+                <Form.Label>Section</Form.Label>
+                <Form.Control required type="text" placeholder="What section would you like to post in?" />
             </Form.Group>
 
             <Form.Group controlId="description">
                 <Form.Label>Description</Form.Label>
-                <Form.Control as="textarea" rows={8} placeholder="A brief description of the section" />
+                <Form.Control required as="textarea" rows={8} placeholder="What message would you like to share?" />
             </Form.Group>
 
             <Form.Group controlId="formButtons">
@@ -80,8 +84,11 @@ function SectionForm(props) {
                 <Button variant="primary" className="m-2" type="submit">
                     Submit
                 </Button>
+                <Form.Label style={{color: "red"}}>
+                    {warning}
+                </Form.Label>
             </Form.Group>
         </Form>
     );
 }
-export default SectionForm
+export default PostForm

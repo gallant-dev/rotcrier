@@ -268,7 +268,8 @@ app.get('/sections/:title', async(req, res) => {
     const section = await Section.findOne({
         where: {
             title: title
-        }
+        },
+        include: Post
     });
     if(section){
         return res.json(section);
@@ -337,42 +338,56 @@ app.delete('/sections', async(req, res) => {
 
 //The below is HTTP requests for Posts data.
 app.post('/posts', async(req, res) => {
-    const { title, body, visits, shit, UserId, SectionId } = req.body;
-    
-    const titleQuery = await Post.findAll({
-        where: {
-            title: title
+    const { title, body, UserId, sectionTitle, sessionId } = req.body;
+    sequelizeSessionStore.get(sessionId, async(session, error) => {
+        if(error){
+            return res.status(error).json("Invalid session credentials. Please try relogging in.")
         }
-    });
+        const titleQuery = await Post.findAll({
+            where: {
+                title: title
+            }
+        });
+        const sectionQuery = await Section.findOne({
+            where: {
+                title: sectionTitle
+            }
+        });
 
-    if(titleQuery.length > 0) {
-        return res.status(400).json("The title of this Post is taken, please try another.");
-    }
-    else{
+        if(titleQuery.length > 0) {
+            return res.status(400).json("The title of this Post is taken, please try another.");
+        }
+        if(!sectionQuery) {
+            return res.status(400).json("The section could not be found, please try another.");
+        }
         try{
-            const post = await Post.create({ title, body, visits, shit, UserId, SectionId});
+            const post = await Post.create({ 
+                title: title, 
+                body: body, 
+                UserId: UserId, 
+                SectionId: sectionQuery.id });
             return res.json(post);
         }
         catch(error){
             return res.status(500).json(error);
         }
 
-    }
+    })
 })
 
 app.get('/posts/:title', async(req, res) => {
     const { title } = req.params;
-    const post = await Post.findAll({
+    const post = await Post.findOne({
         where: {
             title: title
-        }
+        },
+        include: Section
     });
-    if(post.length > 0){
-        return res.json(post);
-    }
-    else {
+
+    if(!post){
         return res.status(404).json("Post not found.")
     }
+    return res.json(post);
 })
 
 app.put('/posts', async(req, res) => {

@@ -60,7 +60,12 @@ function Menu(props) {
     }
 
     return(
-        <NavDropdown title={props.viewFocus.name} id="collapsible-nav-dropdown">
+        <NavDropdown title={
+            props.viewFocus.name.length > 25 ?
+            props.viewFocus.name.substring(0, 25)+'...' :
+            props.viewFocus.name
+            }
+            id="collapsible-nav-dropdown">
             {alwaysVisibleSelections.map( selection => selection !== props.viewFocus &&
                 <NavDropdown.Item onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
             )}
@@ -70,7 +75,12 @@ function Menu(props) {
             )}
             {memberSections.length > 0 && <NavDropdown.Divider />}
             {(memberSections.length > 0) && memberSections.map( section => section !== props.viewFocus &&
-                <NavDropdown.Item onClick={event => focusHandler(section)}>{section.name}</NavDropdown.Item> 
+                <NavDropdown.Item onClick={event => focusHandler(section)}>{
+                    section.name.length > 25 ?
+                    section.name.substring(0, 25)+'...' :
+                    section.name
+                    }
+                </NavDropdown.Item> 
             )}
         </NavDropdown>
     );
