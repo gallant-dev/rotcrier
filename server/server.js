@@ -398,17 +398,27 @@ app.post('/posts', async(req, res) => {
 
 app.get('/posts/:title', async(req, res) => {
     const { title } = req.params;
-    const post = await Post.findOne({
-        where: {
-            title: title
-        },
-        include: Section
-    });
-
-    if(!post){
-        return res.status(404).json("Post not found.")
+    try {
+        const post = await Post.findOne({
+            where: {
+                title: title
+            },
+            include: [Section, {
+                model: Comment,
+                include: {
+                    model: User,
+                    attributes:  ['displayName']
+                }
+            }]
+        });
+        if(!post){
+            return res.status(404).json("Post not found.")
+        }
+        return res.json(post);
     }
-    return res.json(post);
+    catch(error){
+        return res.status(500).json(error)
+    }
 })
 
 app.put('/posts', async(req, res) => {
@@ -421,8 +431,6 @@ app.put('/posts', async(req, res) => {
             const post = await Post.update({ 
                 title: title,
                 body: body,
-                visits: visits,
-                shit: shit, 
                 UserId: UserId
                 }, {
                 where: {
@@ -456,60 +464,73 @@ app.delete('/posts', async(req, res) => {
         }
     })
 })
-//The above is HTTP requests for Section data.
+//The above is HTTP requests for Post data.
 
 //The below is HTTP requests for Comment data.
 app.post('/comments', async(req, res) => {
-    const { body, shit, UserId, PostId, CommentId, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    const { body, UserId, PostId, CommentId, sessionId } = req.body;
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
-            return res.status(error).json("Request denied: invalid session information")
-        }
-        if(PostId && CommentId){
-            return res.status(400).json("Can only comment on a Post or Comment, not both.");
-        }
-        if(!PostId && !CommentId){
-            return res.status(400).json("Must comment on either a Post or Comment.");
-        }
-        
-        const commentQuery = await Comment.findAll({
-            where: {
-                body: body,
-                UserId: UserId,
-                PostId: PostId,
-                CommentId: CommentId
-            }
-        });
-
-        if(commentQuery.length > 0) {
-            return res.status(400).json("Cannot post a duplicate comment.");
-        }
-        else{
-            try{
-                const comment = await Comment.create({ body, shit, UserId, PostId, CommentId});
-                return res.json(comment);
-            }
-            catch(error){
-                return res.status(500).json(error);
-            }
-
+            return res.status(error).json("Unable to validate session")
         }
     })
+
+    const commentQuery = await Comment.findAll({
+        where: {
+            body: body,
+            UserId: UserId,
+            PostId: PostId,
+            CommentId: CommentId
+        }
+    })
+
+    if(commentQuery.length > 0) {
+        return res.status(400).json("Cannot post a duplicate comment.")
+    }
+
+    try{
+        const comment = await Comment.create({ body, UserId, PostId, CommentId});
+        return res.json(comment);
+    }
+    catch(error){
+        return res.status(error)
+    }
 })
 
 app.get('/comments/:commentId', async(req, res) => {
     const { commentId } = req.params;
-    const comment = await Comment.findAll({
+    const comment = await Comment.findOne({
         where: {
             id: commentId
-        }
+        },
+        include: [User, {
+            model: Comment,
+            as: 'Comments',
+            include: {
+                model: User,
+                attributes: ['displayName']
+            }
+        }]
     });
-    if(comment.length > 0){
-        return res.json(comment);
-    }
-    else {
+
+    if(!comment){
         return res.status(404).json("Comment not found.")
     }
+    return res.json(comment);
+})
+
+app.get('/comments/post/:postId', async(req, res) => {
+    const { postId } = req.params;
+    const comments = await Comment.findAll({
+        where: {
+            PostId: postId
+        },
+        include: Comment
+    });
+    if(comment.length == 0){
+        return res.status(404).json("Comment not found.")
+    }
+    return res.json(comments);
 })
 
 app.put('/comments/:id', async(req, res) => {

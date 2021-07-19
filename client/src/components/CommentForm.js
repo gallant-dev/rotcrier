@@ -1,11 +1,7 @@
 import { Form, Button } from 'react-bootstrap'
 import { useState } from 'react'
 
-
-//The funcionality behind post creation. Users create posts which their peers and themselves can post
-//things that they don't like. This form makes a fetch request to the API to confirm credentials, and create
-//a new custom section with them. 
-function PostForm(props) {
+function CommentForm(props) {
     //A default empty warning state that can be used to populate warnings displayed in response from the server.
     const [warning, setWarning] = useState('')
 
@@ -16,18 +12,21 @@ function PostForm(props) {
         event.preventDefault();
         //Create a form object containing the elements.
         const form = event.target.elements
-        await fetch('/posts', {
+        console.log(props.commentTarget.id)
+        const PostId = props.commentTarget.type == 'post' ? props.commentTarget.id : null
+        const CommentId = props.commentTarget.type == 'comment' ? props.commentTarget.id : null
+        await fetch('/comments', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                title: form.postTitle.value,
-                body: form.description.value,
-                sectionTitle: form.sectionTitle.value,
+                body: form.body.value,
                 UserId: sessionStorage.getItem('id'),
-                session: sessionStorage.getItem('session')
+                PostId: PostId,
+                CommentId: CommentId,
+                sessionId: sessionStorage.getItem('session')
             }),
             credentials: 'include'
         })
@@ -45,8 +44,9 @@ function PostForm(props) {
             }
             //Call the function in the parent to set behaviour after form submission, set the warning and log
             //the data to the console.
-            props.onFocusChange({type: 'post', name: data.title})
-            setWarning("")
+            props.onCommentSubmit()
+            setWarning('')
+            event.target.reset()
             console.log(data);
         })
         .catch(error => {
@@ -54,33 +54,14 @@ function PostForm(props) {
         })
     }
 
-    //Sets the focus to "Home" on cancellation.
-    const cancelHandler = () => {
-        props.onFocusChange("Home")
-    }
-    
     return(
         <Form onSubmit={event => submitHandler(event)}>
-            <Form.Group controlId="postTitle">
-                <Form.Label>Title</Form.Label>
-                <Form.Control required type="text" placeholder="Your new post's title" />
-
-            </Form.Group>
-            <Form.Group controlId="sectionTitle">
-                <Form.Label>Section</Form.Label>
-                <Form.Control required type="text" placeholder="What section would you like to post in?" />
-            </Form.Group>
-
-            <Form.Group controlId="description">
-                <Form.Label>Description</Form.Label>
-                <Form.Control required as="textarea" rows={8} placeholder="What message would you like to share?" />
+            <Form.Group controlId="body">
+                <Form.Label>Comment</Form.Label>
+                <Form.Control required as="textarea" rows={8} placeholder="What comment would you like to make?" />
             </Form.Group>
 
             <Form.Group controlId="formButtons">
-                <Button variant="primary" className="m-2" onClick={cancelHandler}>
-                    Cancel
-                </Button>
-
                 <Button variant="primary" className="m-2" type="submit">
                     Submit
                 </Button>
@@ -91,4 +72,5 @@ function PostForm(props) {
         </Form>
     );
 }
-export default PostForm
+
+export default CommentForm
