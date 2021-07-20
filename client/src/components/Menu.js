@@ -11,7 +11,6 @@ function Menu(props) {
         {type: 'menu', name: 'Create a new section'}, 
         {type: 'menu', name: 'Create a new post'}
     ]
-    const [memberSections, setMemberSections] = useState([])
 
     useEffect(() => {
         if(props.isLoggedIn){
@@ -42,7 +41,7 @@ function Menu(props) {
                         item.name = section.title
                         return item
                     })
-                    setMemberSections(memberships)
+                    props.onUpdateMemberSections(memberships)
                     console.log(memberships);
                 })
                 .catch(error => {
@@ -51,7 +50,7 @@ function Menu(props) {
             }
             fetchData();
         }
-        setMemberSections([])
+
     }, [props.isLoggedIn, props.viewFocus])
     
 
@@ -73,8 +72,8 @@ function Menu(props) {
             {props.isLoggedIn && loggedInOnlySelections.map( selection => selection !== props.viewFocus &&
                 <NavDropdown.Item key={selection.type+selection.name} onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
             )}
-            {memberSections.length > 0 && <NavDropdown.Divider />}
-            {(memberSections.length > 0) && memberSections.map( section => section !== props.viewFocus &&
+            {props.memberSections.length > 0 && <NavDropdown.Divider />}
+            {(props.memberSections.length > 0) && props.memberSections.map( section => section !== props.viewFocus &&
                 <NavDropdown.Item key={section.type+section.name} onClick={event => focusHandler(section)}>{
                     section.name.length > 25 ?
                     section.name.substring(0, 25)+'...' :

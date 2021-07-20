@@ -27,7 +27,7 @@ function Header(props) {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
-                <Menu isLoggedIn={isLoggedIn} onFocusChange={focusHandler} viewFocus={props.viewFocus} />
+                <Menu isLoggedIn={isLoggedIn} onUpdateMemberSections={props.onUpdateMemberSections} onFocusChange={focusHandler} memberSections={props.memberSections} viewFocus={props.viewFocus} />
             </Nav>
             <Nav>
                 <AccountControls setLoggedIn={loginHandler} setLoggedOut={logoutHandler}/>

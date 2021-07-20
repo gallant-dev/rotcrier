@@ -10,16 +10,20 @@ import './App.css';
 
 function App() {
   const[focus, setFocus] = useState({type: "menu", name: "Home"})
+  const [memberSections, setMemberSections] = useState([])
+
   const focusChangeHandler = (newFocus) => {
     setFocus(newFocus)
   }
 
-  
+  const memberSectionsHandler = (sections) => {
+    setMemberSections(sections)
+  }
 
   return (
     <div className="App">
       <div className="container-fluid p-0">
-        <Header onFocusChange={focusChangeHandler} viewFocus={focus}/>
+        <Header onFocusChange={focusChangeHandler} onUpdateMemberSections={memberSectionsHandler} memberSections={memberSections} viewFocus={focus}/>
         <div className="container-fluid p-2">
         {focus.name === "Home" && <Home />}
         {focus.name === "Create a new section" && <SectionForm onFocusChange={focusChangeHandler} />}
