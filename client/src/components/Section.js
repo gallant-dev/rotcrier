@@ -71,7 +71,7 @@ function Section(props) {
         <Container>
             {(posts.length > 0 ) &&
             posts.map( post => 
-                <Card onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                <Card  onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
                     <Card.Body>
                         <Card.Title>{
                             post.title.length > 125 ?

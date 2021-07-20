@@ -24,7 +24,7 @@ function PostForm(props) {
             },
             body: JSON.stringify({
                 title: form.postTitle.value,
-                body: form.description.value,
+                body: form.body.value,
                 sectionTitle: form.sectionTitle.value,
                 UserId: sessionStorage.getItem('id'),
                 session: sessionStorage.getItem('session')
@@ -71,8 +71,8 @@ function PostForm(props) {
                 <Form.Control required type="text" placeholder="What section would you like to post in?" />
             </Form.Group>
 
-            <Form.Group controlId="description">
-                <Form.Label>Description</Form.Label>
+            <Form.Group controlId="body">
+                <Form.Label>Body</Form.Label>
                 <Form.Control required as="textarea" rows={8} placeholder="What message would you like to share?" />
             </Form.Group>
 

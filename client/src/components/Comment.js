@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Card, Button } from 'react-bootstrap'
+import { Card, Button, Row, Col } from 'react-bootstrap'
 import CommentForm from './CommentForm'
+import Shit from './Shit'
 
 function Comment(props) {
     const[comment, setComment] = useState(props.comment)
@@ -70,14 +71,23 @@ function Comment(props) {
         <Card className="mt-1">
             <Card.Header>{comment.User.displayName}</Card.Header>
             <Card.Body>
-                <Card.Text>
-                    {comment.body}
-                </Card.Text>
-                {(!showCommentForm || !(props.commentTarget.type == 'comment' &&
-                 props.commentTarget.id == comment.id)) && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="primary">Comment</Button>}
-                {(showCommentForm && (props.commentTarget.type == 'comment' &&
-                 props.commentTarget.id == comment.id)) && <CommentForm onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}
-                {comments.length > 0 && comments.map( comment => <Comment comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+                <Row>
+                    <Col xs={1} sm={1} md={1} lg={1} xl={1}>
+                        <Shit shitFor={{type: 'comment', id: comment.id}} />
+                    </Col>
+                    <Col xs={11} sm={11} md={11} lg={11} xl={11}>
+                            <Card.Text>
+                            {comment.body}
+                        </Card.Text>
+                        {(!showCommentForm || !(props.commentTarget.type == 'comment' &&
+                        props.commentTarget.id == comment.id)) && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="primary">Comment</Button>}
+                        {(showCommentForm && (props.commentTarget.type == 'comment' &&
+                        props.commentTarget.id == comment.id)) && <CommentForm onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}
+                        {comments.length > 0 && comments.map( comment => <Comment comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+                    </Col>
+                </Row>
+
+
             </Card.Body>
         </Card>
     );

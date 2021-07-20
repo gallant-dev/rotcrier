@@ -237,7 +237,7 @@ app.delete('/users', async(req, res) => {
 app.post('/sections', async(req, res) => {
     const { title, description, sessionId } = req.body;
 
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
@@ -312,7 +312,7 @@ app.get('/sections/:displayName/memberships', async(req, res) => {
 
 app.put('/sections', async(req, res) => {
     const { title, description, visits, UserId, sessionId } = req.body;  
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
@@ -338,7 +338,7 @@ app.put('/sections', async(req, res) => {
 
 app.delete('/sections', async(req, res) => {
     const { title, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
@@ -360,7 +360,7 @@ app.delete('/sections', async(req, res) => {
 //The below is HTTP requests for Posts data.
 app.post('/posts', async(req, res) => {
     const { title, body, UserId, sectionTitle, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Invalid session credentials. Please try relogging in.")
         }
@@ -398,10 +398,11 @@ app.post('/posts', async(req, res) => {
 
 app.get('/posts/:title', async(req, res) => {
     const { title } = req.params;
+    const decodedTitle = decodeURIComponent(title)
     try {
         const post = await Post.findOne({
             where: {
-                title: title
+                title: decodedTitle
             },
             include: [Section, {
                 model: Comment,
@@ -422,45 +423,96 @@ app.get('/posts/:title', async(req, res) => {
 })
 
 app.put('/posts', async(req, res) => {
-    const { title, body, visits, shit, UserId, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    const { id, body, sessionId } = req.body;
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
+
+        const postQuery = await Post.findOne({
+            where: {
+                id: id
+            },
+            include: Section
+        });
+        if(!postQuery){
+            return res.status(400).json("Unable to find post!")
+        }
+
         try{
+
             const post = await Post.update({ 
-                title: title,
-                body: body,
-                UserId: UserId
+                id: postQuery.id,
+                title: postQuery.title, 
+                body: body, 
+                UserId: postQuery.UserId, 
+                SectionId: postQuery.SectionId 
                 }, {
                 where: {
-                    title: title
+                    id: id
                 }
             });
-            return res.json(post);
+            const updatedPost = await Post.findOne({
+                where: {
+                    id: postQuery.id,
+                },
+                include: [Section, {
+                    model: Comment,
+                    include: {
+                        model: User,
+                        attributes:  ['displayName']
+                    }
+                }]
+            });
+            return res.json(updatedPost);
         }
         catch(error){
-            return res.status(500).json(error);
+            return res.status(500).json("Server Error!")
         }
     })
 })
 
 app.delete('/posts', async(req, res) => {
-    const { title, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    const { id, sessionId } = req.body;
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
+
+        const post = await Post.findOne({
+            where: {
+                id: id
+            },
+            include: Section
+        });
+
+        if(!post) {
+            return res.status(400).json("Post not found.")
+        }
+        const user = await User.findOne({
+            where: {
+                displayName: req.session.data
+            }
+        })
+
+        if(!user) {
+            return res.status(400).json("User not found.")
+        }
+
+        if(user.id != post.UserId || user.id != post.Section.UserId){
+            return res.status(401).json("Request denied: unauthorized")
+        }
+
         try{
             const post = await Post.destroy({
                 where: {
-                    title: title
+                    id: id
                 }
             });
-            return res.json(title+" was successfully deleted!");
+            return res.json("Post was successfully deleted!");
         }
         catch(error){
-            return res.status(500).json(error);
+            return res.status(500);
         }
     })
 })
@@ -536,7 +588,7 @@ app.get('/comments/post/:postId', async(req, res) => {
 app.put('/comments/:id', async(req, res) => {
     const { id } = req.params;
     const { body, shit, UserId, PostId, CommentId, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
@@ -562,7 +614,7 @@ app.put('/comments/:id', async(req, res) => {
 
 app.delete('/comments', async(req, res) => {
     const { id, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
@@ -584,7 +636,7 @@ app.delete('/comments', async(req, res) => {
 //The below is HTTP requests for Shit data.
 app.post('/shits', async(req, res) => {
     const { UserId, PostId, CommentId, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
@@ -604,7 +656,7 @@ app.post('/shits', async(req, res) => {
         });
 
         if(shitQuery) {
-            return res.status(400).json("Cannot give two shits.");
+            return res.status(409).json("Cannot give two shits.");
         }
         else{
             try{
@@ -621,33 +673,35 @@ app.post('/shits', async(req, res) => {
 
 app.get('/shits/post/:PostId', async(req, res) => {
     const {  PostId } = req.params;
-    const shit = await Shit.findAll({
+    const shits = await Shit.findAll({
         where: {
             PostId: PostId
-        }
+        },
+        include: Shit
     });
 
-    if(shit.length > 0){
+    if(shits.length > 0){
         return res.json(shit);
     }
     else {
-        return res.status(404).json("No shits given.")
+        return res.json("No shits given.")
     }
 })
 
 app.get('/shits/comment/:CommentId', async(req, res) => {
     const {  CommentId } = req.params;
-    const shit = await Shit.findAll({
+    const shits = await Shit.findAll({
         where: {
             CommentId: CommentId
-        }
+        },
+        include: Shit
     });
 
-    if(shit.length > 0){
-        return res.json(shit);
+    if(shits.length > 0){
+        return res.json(shits);
     }
     else {
-        return res.status(404).json("No shits given.")
+        return res.json("No shits given.")
     }
 })
 
@@ -663,13 +717,13 @@ app.get('/shits/user/:UserId/given', async(req, res) => {
         return res.json(shit);
     }
     else {
-        return res.status(404).json("No shits given.")
+        return res.json("No shits given.")
     }
 })
 
 app.get('/shits/user/:UserId/comments/recieved', async(req, res) => {
     const { UserId } = req.params;
-    const shit = await Shit.findAll({
+    const shits = await Shit.findAll({
         include: [{
             model: Comment,
             where: {
@@ -678,11 +732,11 @@ app.get('/shits/user/:UserId/comments/recieved', async(req, res) => {
         }]
     })
 
-    if(shit.length > 0){
+    if(shits.length > 0){
         return res.json(shit);
     }
     else {
-        return res.status(404).json("No shits given.")
+        return res.json("No shits given.")
     }
 })
 
@@ -701,13 +755,13 @@ app.get('/shits/user/:UserId/posts/recieved', async(req, res) => {
         return res.json(shit);
     }
     else {
-        return res.status(404).json("No shits given.")
+        return res.json("No shits given.")
     }
 })
 
 app.delete('/shits', async(req, res) => {
     const { id, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(session, error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
@@ -717,7 +771,7 @@ app.delete('/shits', async(req, res) => {
                     id: id
                 }
             });
-            return res.json(shit);
+            return res.json("Shit succesfully ungiven!");
         }
         catch(error){
             return res.status(500).json(error);
