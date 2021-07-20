@@ -67,15 +67,15 @@ function Menu(props) {
             }
             id="collapsible-nav-dropdown">
             {alwaysVisibleSelections.map( selection => selection !== props.viewFocus &&
-                <NavDropdown.Item onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
+                <NavDropdown.Item key={selection.type+selection.name} onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
             )}
             {props.isLoggedIn && <NavDropdown.Divider />}
             {props.isLoggedIn && loggedInOnlySelections.map( selection => selection !== props.viewFocus &&
-                <NavDropdown.Item onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
+                <NavDropdown.Item key={selection.type+selection.name} onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
             )}
             {memberSections.length > 0 && <NavDropdown.Divider />}
             {(memberSections.length > 0) && memberSections.map( section => section !== props.viewFocus &&
-                <NavDropdown.Item onClick={event => focusHandler(section)}>{
+                <NavDropdown.Item key={section.type+section.name} onClick={event => focusHandler(section)}>{
                     section.name.length > 25 ?
                     section.name.substring(0, 25)+'...' :
                     section.name

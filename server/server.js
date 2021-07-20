@@ -555,7 +555,10 @@ app.get('/comments/:commentId', async(req, res) => {
         where: {
             id: commentId
         },
-        include: [User, {
+        include: [{
+            model: User,
+            attributes: ['id', 'displayName']
+        }, {
             model: Comment,
             as: 'Comments',
             include: {
@@ -585,26 +588,58 @@ app.get('/comments/post/:postId', async(req, res) => {
     return res.json(comments);
 })
 
-app.put('/comments/:id', async(req, res) => {
-    const { id } = req.params;
-    const { body, shit, UserId, PostId, CommentId, sessionId } = req.body;
+app.put('/comments/', async(req, res) => {
+    const { id, body, UserId, PostId, CommentId, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
+        const commentQuery = await Comment.findOne({
+            where: {
+                id: id
+            },
+            include: [User, {
+                model: Comment,
+                as: 'Comments',
+                include: {
+                    model: User,
+                    attributes: ['displayName']
+                }
+            }]
+        });
+
+        if(!commentQuery){
+            return res.status(400).json("Comment not found")
+        }
+    
         try{
+
             const comment = await Comment.update({ 
+                id: commentQuery.id,
                 body: body,
-                shit: shit,
-                UserId: UserId,
-                PostId: PostId, 
-                CommentId: CommentId
+                UserId: commentQuery.UserId,
+                PostId: commentQuery.PostId, 
+                CommentId: commentQuery.CommentId
                 }, {
                 where: {
                     id: id
                 }
             });
-            return res.json(comment);
+
+            const updatedComment = await Comment.findOne({
+                where: {
+                    id: id
+                },
+                include: [User, {
+                    model: Comment,
+                    as: 'Comments',
+                    include: {
+                        model: User,
+                        attributes: ['displayName']
+                    }
+                }]
+            });
+            return res.json(updatedComment);
         }
         catch(error){
             return res.status(500).json(error);
@@ -676,8 +711,7 @@ app.get('/shits/post/:PostId', async(req, res) => {
     const shits = await Shit.findAll({
         where: {
             PostId: PostId
-        },
-        include: Shit
+        }
     });
 
     if(shits.length > 0){
@@ -693,8 +727,7 @@ app.get('/shits/comment/:CommentId', async(req, res) => {
     const shits = await Shit.findAll({
         where: {
             CommentId: CommentId
-        },
-        include: Shit
+        }
     });
 
     if(shits.length > 0){

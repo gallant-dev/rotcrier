@@ -46,7 +46,9 @@ function Post(props) {
     }
 
     const deleteButtonHandler = async() => {
-        window.confirm("Are you sure you want to delete this post?");
+        if(!window.confirm("Are you sure you want to delete this post?")){
+            return
+        }
 
         await fetch('/posts', {
             method: 'DELETE',
@@ -169,6 +171,18 @@ function Post(props) {
         })
     }
 
+    const removeFromParentArray = (remove) => {
+        const index = comments.findIndex(comment => comment.id === remove.id)
+        console.log(index)
+        console.log(remove)
+        if(index > -1) {
+            let newArray = comments.splice(index, 1)
+            setComments(newArray)
+        }
+
+        console.log(comments)
+    }
+
     return(
         <div>
             <Row className="justify-content-start">
@@ -178,12 +192,12 @@ function Post(props) {
                 <Col xs={10} sm={10} md={10} lg={9} xl={8}>
                     {section && <h2 onClick={event => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h2>}
                     <h1>{post.title}</h1>
-                    {!editing && <p>{post.body}</p>}
+                    {!editing && <span>{post.body}</span>}
                     {editing && 
                     <Form onSubmit={event => submitEditHandler(event)}>
                         <Form.Group controlId="body">
                             <Form.Label>Body</Form.Label>
-                            <Form.Control required as="textarea" rows={8} default={post.body} placeholder="How would you like to change the message you shared?" />
+                            <Form.Control required as="textarea" rows={8}>{post.body}</Form.Control>
                         </Form.Group>
             
                         <Form.Group controlId="formButtons">
@@ -230,7 +244,7 @@ function Post(props) {
 
                 {(commentTarget.type === "post" && showCommentForm)  && <CommentForm onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
             </Row>
-            {comments.length > 0 && comments.map( comment => <Comment viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+            {comments.length > 0 && comments.map( comment => <Comment key={comment.id} removeFromParentArray={removeFromParentArray} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
         </div>
 
     );
