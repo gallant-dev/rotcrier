@@ -1,61 +1,85 @@
 import { useEffect, useState } from 'react'
 import { Container, Pagination, Card } from 'react-bootstrap'
-import Post from '../components/Post'
 
 function Home(props){
     const [user, setUser] = useState()
     const [posts, setPosts] = useState([])
 
-    const orderPosts = (array) => {
-        let postsToOrder = array;
-        for(let i = postsToOrder.length -1; i >  0; i++){
-            const k = Math.floor(Math.random() * i)
-            const temp = postsToOrder[i]
-            postsToOrder[i] = postsToOrder[k]
-            postsToOrder[k] = temp
-        }
-        return postsToOrder
-    }
-
     const fetchData = async(displayName) => {
         console.log(displayName)
-        await fetch('/users/'+displayName+'/memberships/posts/1/25', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        })
-        .then(async response => {
-            const isJson = response.headers.get('content-type')?.includes('application/json');
-            const data = isJson && await response.json();
-            
+        if(displayName != null){
+            await fetch('/users/'+displayName+'/memberships/posts/0/25', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
+            .then(async response => {
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson && await response.json();
+                
+    
+                // check for error response
+                if (!response.ok) {
+                    // get error message from body or default to response status 
+                    const error = (data && data.message) || response.status;
+                    return Promise.reject(error);
+                }
+                console.log(data)
+                setUser(data)
+                const postArray = data.Sections.map(section => section.Posts).flat().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+                setPosts(postArray)
+                console.log(postArray)
+                console.log(data)
+            })
+            .catch(error => {
+                console.error('Error! ', error);
+            })
 
-            // check for error response
-            if (!response.ok) {
-                // get error message from body or default to response status 
-                const error = (data && data.message) || response.status;
-                return Promise.reject(error);
-            }
+        }
+        else {
+            await fetch('/posts/unauth/0/25', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
+            .then(async response => {
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson && await response.json();
+                
+    
+                // check for error response
+                if (!response.ok) {
+                    // get error message from body or default to response status 
+                    const error = (data && data.message) || response.status;
+                    return Promise.reject(error);
+                }
+                console.log(data)
+                const postArray = data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+                setPosts(postArray)
+                console.log(postArray)
+                console.log(data)
+            })
+            .catch(error => {
+                console.error('Error! ', error);
+            })
+        }
 
-            setUser(data)
-            const postArray = data.Sections.map(section => section.Posts).flat().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-            setPosts(postArray)
-            console.log(postArray)
-            console.log(data)
-        })
-        .catch(error => {
-            console.error('Error! ', error);
-        })
     }
 
     useEffect(() => {
         const displayName = sessionStorage.getItem('displayName')
         if(displayName){         
-            fetchData(displayName);
+            fetchData(displayName)
         }
-
+        else {
+            fetchData(null)
+        }
 
     }, [props.isLoggedIn, props.viewFocus])
     
@@ -78,7 +102,9 @@ function Home(props){
         <>
 
         <Container>
+        <h2>Recent Updates</h2>
             {(posts.length > 0) &&
+            
                posts.map(post =>
                     <Card key={post.id+post.title} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
                     <Card.Body>

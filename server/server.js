@@ -2,6 +2,7 @@ const { sequelize, User, Section, Post, Comment, Shit } = require('./models');
 const fs = require('fs')
 var express = require('express');
 var session = require('express-session')
+const { Op } = require("sequelize");
 const SessionStore = require('express-session-sequelize')(session.Store);
 var crypto = require('crypto');
 
@@ -184,6 +185,39 @@ app.get('/users/:displayName', async(req, res) => {
     else {
         return res.status(404).json("User not found.")
     }
+})
+
+app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) => {    
+    const { displayName, start, limit } = req.params;
+
+    try {
+        const user = await User.findOne({
+            where: {
+                displayName: displayName
+            },
+            include: {
+                model: Section,
+                include: {
+                    model: Post,
+                    order: [
+                        ['id', 'DESC']
+                    ],
+                    offset: start,
+                    limit: limit
+                }
+            },
+            attributes: ['id', 'displayName']
+        });
+
+        if(!user){
+            return res.sendStatus(400).json("User not found.")
+        }
+        return res.json(user)
+    }
+    catch(error) {
+        return res.json(error)
+    }
+
 })
 
 app.put('/users', async(req, res) => {
@@ -427,6 +461,8 @@ app.post('/posts', async(req, res) => {
     })
 })
 
+
+
 app.get('/posts/:title', async(req, res) => {
     const { title } = req.params;
     const decodedTitle = decodeURIComponent(title)
@@ -451,6 +487,66 @@ app.get('/posts/:title', async(req, res) => {
     catch(error){
         return res.status(500).json(error)
     }
+})
+
+app.get('/posts/unauth/:start/:limit', async(req, res) => {    
+    const { start, limit } = req.params;
+
+    try {
+        const date = new Date()
+        const currentTime = date.getTime()
+
+        const post = await Post.findAll({
+            where: {
+                updatedAt: {
+                    [Op.between]: [currentTime-(86400*3), currentTime]
+                }
+            },
+            offset: start,
+            limit: limit
+        });
+    
+        if(!post){
+            const post = await Post.findAll({
+                where: {
+                    updatedAt: {
+                        [Op.between]: [currentTime-(86400*7), currentTime]
+                    }
+                },
+                offset: start,
+                limit: limit
+            });
+            if(!post){
+                const post = await Post.findAll({
+                    where: {
+                        updatedAt: {
+                            [Op.between]: [currentTime-(86400*30), currentTime]
+                        }
+                    },
+                    offset: start,
+                    limit: limit
+                });
+                if(!post){
+                    const post = await Post.findAll({
+                        offset: start,
+                        limit: limit
+                    });
+
+                    return res.json(post)
+                }
+
+                return res.json(post)
+            }
+            
+            return res.json(post)
+        }
+
+        return res.json(post)
+    }
+    catch(error) {
+        return res.json(error)
+    }
+
 })
 
 app.put('/posts', async(req, res) => {
