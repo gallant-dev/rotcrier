@@ -32,7 +32,6 @@ function Shit(props){
             }
 
             setShit(data)
-            setShitGiven(true)
             console.log(data);
 
         })

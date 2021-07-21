@@ -310,6 +310,37 @@ app.get('/sections/:displayName/memberships', async(req, res) => {
 
 })
 
+app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) => {    
+    const { displayName, start, end } = req.params;
+    
+    try {
+        const user = await User.findOne({
+            where: {
+                displayName: displayName
+            },
+            include: {
+                model: Section,
+                include: {
+                    model: Post,
+                    order: 'DESC',
+                    offset: start,
+                    limit: end
+                }
+            },
+            attributes: ['id', 'displayName']
+        });
+
+        if(!user){
+            return res.sendStatus(400).json("User not found.")
+        }
+        return res.json(user)
+    }
+    catch(error) {
+        return res.json(error)
+    }
+
+})
+
 app.put('/sections', async(req, res) => {
     const { title, description, visits, UserId, sessionId } = req.body;  
     sequelizeSessionStore.get(sessionId, async(error, session) => {

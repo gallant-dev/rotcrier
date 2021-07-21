@@ -25,7 +25,7 @@ function App() {
       <div className="container-fluid p-0">
         <Header onFocusChange={focusChangeHandler} onUpdateMemberSections={memberSectionsHandler} memberSections={memberSections} viewFocus={focus}/>
         <div className="container-fluid p-2">
-        {focus.name === "Home" && <Home />}
+        {focus.name === "Home" && <Home memberSections={memberSections} onFocusChange={focusChangeHandler} />}
         {focus.name === "Create a new section" && <SectionForm onFocusChange={focusChangeHandler} />}
         {focus.name === "Create a new post" && <PostForm onFocusChange={focusChangeHandler} />}
         {focus.type === "section" && <Section viewFocus={focus} onFocusChange={focusChangeHandler}/>}
