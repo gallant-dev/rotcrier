@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Comment)
       User.hasMany(models.Shit, {
         foreignKey: {
+          name: 'UserId',
           allowNull: false
         }
       })

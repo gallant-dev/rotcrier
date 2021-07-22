@@ -186,7 +186,7 @@ function Post(props) {
     return(
         <div>
             <Row className="justify-content-start">
-                <Col xs={1} sm={1} md={1} lg={1} xl={1}>
+                <Col xs={2} sm={1} md={1} lg={1} xl={1}>
                    {post.id && <Shit shitFor={{type: 'post', id: post.id.toString()}} />}
                 </Col>
                 <Col xs={10} sm={10} md={10} lg={9} xl={8}>

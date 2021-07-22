@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Container, Pagination, Card } from 'react-bootstrap'
+import { Container, Pagination, Card, Row, Col } from 'react-bootstrap'
+import Shit from './Shit'
 
 function Home(props){
     const [user, setUser] = useState()
@@ -106,23 +107,30 @@ function Home(props){
             {(posts.length > 0) &&
             
                posts.map(post =>
-                    <Card key={post.id+post.title} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
-                    <Card.Body>
-                        <Card.Title>{
+                <Card key={post.id+post.title}>
+                <Card.Body>
+                    <Row>
+                        <Col sm={1}>
+                            <Shit shitFor={{type: 'post', id: post.id.toString()}} />
+                        </Col>
+                        <Col onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                            <Card.Title>{
                             post.title.length > 125 ?
                             post.title.substring(0, 125)+'...' :
                             post.title
                             }
-                        </Card.Title>
-                        <Card.Text>
-                        {
-                            post.body.length > 125 ?
-                            post.body.substring(0, 125)+'...' :
-                            post.body
-                            }
-                        </Card.Text>
-                    </Card.Body>
-                </Card> 
+                            </Card.Title>
+                            <Card.Text>
+                            {
+                                post.body.length > 125 ?
+                                post.body.substring(0, 125)+'...' :
+                                post.body
+                                }
+                            </Card.Text>                          
+                        </Col>
+                    </Row>
+                </Card.Body>
+            </Card> 
                 )
             }
         </Container>

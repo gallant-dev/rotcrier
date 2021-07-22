@@ -4,7 +4,7 @@ import shitIcon from '../images/icons8-triangle-48.png'
 import noShitIcon from '../images/icons8-triangle-48-none.png'
 
 function Shit(props){
-    const[shit, setShit] = useState()
+    const[shits, setShits] = useState([])
     const[shitFor, setShitFor] = useState(props.shitFor)
     const[shitGiven, setShitGiven] = useState(false)
 
@@ -29,10 +29,15 @@ function Shit(props){
                 const error = (data && data.message) || response.status;
                 console.log(error)
                 return Promise.reject(error);
+            }     
+            let shitGiven = false
+            for(let i = 0; i < data.length; i++){
+                if(data[i].UserId == sessionStorage.getItem('id')){
+                    shitGiven = true
+                }
             }
-
-            setShit(data)
-            console.log(data);
+            setShits(data)
+            setShitGiven(shitGiven)
 
         })
         .catch(error => {
@@ -41,16 +46,19 @@ function Shit(props){
     }
 
     useEffect(() => {
-
         fetchData();
 
     }, [props.viewFocus])
 
     const clickShitHandler = async() => {
+        const UserId = sessionStorage.getItem('id')
+        const PostId = shitFor.type == 'post' ? shitFor.id : null
+        const CommentId = shitFor.type == 'comment' ? shitFor.id : null
+        console.log(PostId+' '+CommentId)
+        if(!UserId){
+            return window.alert("You must be logged in to give a shit!")
+        }
         if(!shitGiven){
-            const PostId = shitFor.type == 'post' ? shitFor.id : null
-            const CommentId = shitFor.type == 'comment' ? shitFor.id : null
-            console.log(PostId+' '+CommentId)
             await fetch('/shits', {
                 method: 'POST',
                 headers: {
@@ -58,7 +66,7 @@ function Shit(props){
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    UserId: sessionStorage.getItem('id'),
+                    UserId: UserId,
                     PostId: PostId,
                     CommentId: CommentId,
                     sessionId: sessionStorage.getItem('session')
@@ -81,7 +89,7 @@ function Shit(props){
                 }
                 //Call the function in the parent to set behaviour after form submission, set the warning and log
                 //the data to the console.
-                setShit(data)
+                fetchData()
                 setShitGiven(true)
                 console.log(data);
             })
@@ -97,7 +105,9 @@ function Shit(props){
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    id: shit.id,
+                    UserId: UserId,
+                    PostId: PostId,
+                    CommentId: CommentId,
                     sessionId: sessionStorage.getItem('session')
                 }),
                 credentials: 'include'
@@ -115,6 +125,7 @@ function Shit(props){
                 }
                 //Call the function in the parent to set behaviour after form submission, set the warning and log
                 //the data to the console.
+                fetchData()
                 setShitGiven(false)
                 console.log(data);
             })
@@ -126,8 +137,11 @@ function Shit(props){
     }
 
     return(
-        <Image  onClick={event => clickShitHandler()} width={35}
-        height={35} src={shitGiven ? shitIcon : noShitIcon}></Image>
+        <div className="text-center">
+            {<h6>{shits.length}</h6>}
+            <Image onClick={() => clickShitHandler()} width={35} height={35} src={shitGiven ? shitIcon : noShitIcon} />
+        </div>
+
     );
 }
 

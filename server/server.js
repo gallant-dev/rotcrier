@@ -202,6 +202,7 @@ app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) =
                     order: [
                         ['id', 'DESC']
                     ],
+                    include: Shit,
                     offset: start,
                     limit: limit
                 }
@@ -496,10 +497,10 @@ app.get('/posts/unauth/:start/:limit', async(req, res) => {
         const date = new Date()
         const currentTime = date.getTime()
 
-        const post = await Post.findAll({
+        const posts = await Post.findAll({
             where: {
                 updatedAt: {
-                    [Op.between]: [currentTime-(86400*3), currentTime]
+                    [Op.between]: [currentTime-(86400000*3), currentTime]
                 }
             },
             offset: start,
@@ -507,22 +508,22 @@ app.get('/posts/unauth/:start/:limit', async(req, res) => {
             include: Shit
         });
     
-        if(!post){
+        if(posts.length < limit){
             const post = await Post.findAll({
                 where: {
                     updatedAt: {
-                        [Op.between]: [currentTime-(86400*7), currentTime]
+                        [Op.between]: [currentTime-(86400000*7), currentTime]
                     }
                 },
                 offset: start,
                 limit: limit,
                 include: Shit
             });
-            if(!post){
+            if(posts.length < limit){
                 const post = await Post.findAll({
                     where: {
                         updatedAt: {
-                            [Op.between]: [currentTime-(86400*30), currentTime]
+                            [Op.between]: [currentTime-(86400000*30), currentTime]
                         }
                     },
                     offset: start,
@@ -813,6 +814,18 @@ app.post('/shits', async(req, res) => {
         if(!PostId && !CommentId){
             return res.status(400).json("Must give a shit about either a Post or Comment.");
         }
+        if(!UserId){
+            return res.status(400).json("Must provide a UserId.");
+        }
+        const userQuery = await User.findOne({
+            where: {
+                id: UserId
+            }
+        });
+
+        if(!userQuery){
+            return res.status(404).json("User not found.");
+        }
         
         const shitQuery = await Shit.findOne({
             where: {
@@ -845,13 +858,7 @@ app.get('/shits/post/:PostId', async(req, res) => {
             PostId: PostId
         }
     });
-
-    if(shits.length > 0){
-        return res.json(shit);
-    }
-    else {
-        return res.json("No shits given.")
-    }
+    return res.json(shits);
 })
 
 app.get('/shits/comment/:CommentId', async(req, res) => {
@@ -861,13 +868,7 @@ app.get('/shits/comment/:CommentId', async(req, res) => {
             CommentId: CommentId
         }
     });
-
-    if(shits.length > 0){
-        return res.json(shits);
-    }
-    else {
-        return res.json("No shits given.")
-    }
+    return res.json(shits);
 })
 
 app.get('/shits/user/:UserId/given', async(req, res) => {
@@ -877,13 +878,7 @@ app.get('/shits/user/:UserId/given', async(req, res) => {
             UserId: UserId
         }
     });
-
-    if(shit.length > 0){
-        return res.json(shit);
-    }
-    else {
-        return res.json("No shits given.")
-    }
+    return res.json(shits);
 })
 
 app.get('/shits/user/:UserId/comments/recieved', async(req, res) => {
@@ -896,13 +891,7 @@ app.get('/shits/user/:UserId/comments/recieved', async(req, res) => {
             }
         }]
     })
-
-    if(shits.length > 0){
-        return res.json(shit);
-    }
-    else {
-        return res.json("No shits given.")
-    }
+    return res.json(shits);
 })
 
 app.get('/shits/user/:UserId/posts/recieved', async(req, res) => {
@@ -915,25 +904,33 @@ app.get('/shits/user/:UserId/posts/recieved', async(req, res) => {
             }
         }]
     })
-
-    if(shit.length > 0){
-        return res.json(shit);
-    }
-    else {
-        return res.json("No shits given.")
-    }
+    return res.json(shits);
 })
 
 app.delete('/shits', async(req, res) => {
-    const { id, sessionId } = req.body;
+    const { UserId, PostId, CommentId, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
+        const user = await User.findOne({
+            where: {
+                id: UserId
+            }
+        })
+        if(!user){
+            return res.status(404).json("User not found!")
+        }
+        if(req.session.data != user.displayName){
+            return res.status(401).json("Please try logging in again!")
+        }
+
         try{
             const shit = await Shit.destroy({
                 where: {
-                    id: id
+                    UserId: UserId,
+                    PostId: PostId,
+                    CommentId: CommentId
                 }
             });
             return res.json("Shit succesfully ungiven!");

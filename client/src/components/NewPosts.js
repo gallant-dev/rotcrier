@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Container, Card, Row, Col } from 'react-bootstrap'
+import { Container, Row, Col, Card } from 'react-bootstrap'
 import Shit from './Shit'
 
-function TopPosts(props){
+function NewPosts(props){
     const [user, setUser] = useState()
     const [posts, setPosts] = useState([])
 
@@ -27,7 +27,7 @@ function TopPosts(props){
                 return Promise.reject(error);
             }
             console.log(data)
-            const postArray = data.sort((a, b) => b.Shits.length - a.Shits.length)
+            const postArray = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             console.log(postArray)
             setPosts(data)
             console.log(data)
@@ -43,39 +43,38 @@ function TopPosts(props){
     }, [props.isLoggedIn, props.viewFocus])
     
 
-
     return(
         <>
 
         <Container>
-        <h2>Top Posts</h2>
+        <h2>New Posts</h2>
             {(posts.length > 0) &&
             
                posts.map(post =>
-                <Card key={post.id+post.title}>
-                <Card.Body>
-                    <Row>
-                        <Col xs={1} sm={1} md={1} lg={1} xl={1}>
-                            <Shit shitFor={{type: 'post', id: post.id.toString()}} />
-                        </Col>
-                        <Col xs={10} sm={11} md={11} lg={11} xl={11} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
-                            <Card.Title>{
-                            post.title.length > 125 ?
-                            post.title.substring(0, 125)+'...' :
-                            post.title
-                            }
-                            </Card.Title>
-                            <Card.Text>
-                            {
-                                post.body.length > 125 ?
-                                post.body.substring(0, 125)+'...' :
-                                post.body
+                    <Card key={post.id+post.title}>
+                    <Card.Body>
+                        <Row>
+                            <Col sm={1}>
+                                <Shit shitFor={{type: 'post', id: post.id.toString()}} />
+                            </Col>
+                            <Col onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                                <Card.Title>{
+                                post.title.length > 125 ?
+                                post.title.substring(0, 125)+'...' :
+                                post.title
                                 }
-                            </Card.Text>                          
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card> 
+                                </Card.Title>
+                                <Card.Text>
+                                {
+                                    post.body.length > 125 ?
+                                    post.body.substring(0, 125)+'...' :
+                                    post.body
+                                    }
+                                </Card.Text>                          
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card> 
                 )
             }
         </Container>
@@ -83,4 +82,4 @@ function TopPosts(props){
     );
 }
 
-export default TopPosts
+export default NewPosts
