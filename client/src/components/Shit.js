@@ -74,6 +74,9 @@ function Shit(props){
                 if (!response.ok) {
                     //Display error message on the UI by setting the warning, and reject.
                     const error = (data && data.message) || response.status;
+                    if(error == 409){
+                        setShitGiven(true)
+                    }
                     return Promise.reject(error);
                 }
                 //Call the function in the parent to set behaviour after form submission, set the warning and log

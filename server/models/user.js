@@ -17,7 +17,11 @@ module.exports = (sequelize, DataTypes) => {
 
       User.hasMany(models.Section)
       User.hasMany(models.Comment)
-      User.hasMany(models.Shit)
+      User.hasMany(models.Shit, {
+        foreignKey: {
+          allowNull: false
+        }
+      })
     }
   };
   User.init({

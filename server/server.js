@@ -503,7 +503,8 @@ app.get('/posts/unauth/:start/:limit', async(req, res) => {
                 }
             },
             offset: start,
-            limit: limit
+            limit: limit,
+            include: Shit
         });
     
         if(!post){
@@ -514,7 +515,8 @@ app.get('/posts/unauth/:start/:limit', async(req, res) => {
                     }
                 },
                 offset: start,
-                limit: limit
+                limit: limit,
+                include: Shit
             });
             if(!post){
                 const post = await Post.findAll({
@@ -524,12 +526,14 @@ app.get('/posts/unauth/:start/:limit', async(req, res) => {
                         }
                     },
                     offset: start,
-                    limit: limit
+                    limit: limit,
+                    include: Shit
                 });
                 if(!post){
                     const post = await Post.findAll({
                         offset: start,
-                        limit: limit
+                        limit: limit,
+                        include: Shit
                     });
 
                     return res.json(post)
@@ -548,6 +552,7 @@ app.get('/posts/unauth/:start/:limit', async(req, res) => {
     }
 
 })
+
 
 app.put('/posts', async(req, res) => {
     const { id, body, sessionId } = req.body;
