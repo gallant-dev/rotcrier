@@ -314,7 +314,10 @@ app.get('/sections/:title', async(req, res) => {
         where: {
             title: title
         },
-        include: Post
+        include: [Post, {
+            model: User,
+            attributes:  ['displayName']
+        }]
     });
     if(section){
         return res.json(section);
@@ -377,27 +380,57 @@ app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) =
 })
 
 app.put('/sections', async(req, res) => {
-    const { title, description, visits, UserId, sessionId } = req.body;  
+    const { title, description, UserId, sessionId } = req.body;  
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
 
+        const sectionQuery = await Section.findOne({
+            where: {
+                title: title
+            }
+        });
+
+        if(!sectionQuery) {
+            return res.status(404).json("Section not found!")
+        }
+
+        const userQuery = await User.findOne({
+            where: {
+                id: sectionQuery.UserId
+            }
+        });
+        console.log(userQuery.displayName+' '+req.session.data)
+        if(!userQuery || (userQuery.displayName != req.session.data)){
+            return res.status(401).json("Unauthorized!")
+        }
+        
         try{
             const section = await Section.update({ 
-                title: title,
-                description: description,
-                visits: visits, 
-                UserId: UserId
+                id: sectionQuery.id,
+                title: sectionQuery.title, 
+                description: description, 
+                UserId: sectionQuery.UserId, 
                 }, {
                 where: {
-                    title: title
+                    id: sectionQuery.id
                 }
             });
-            return res.json(section);
+            const updatedSection = await Section.findOne({
+                where: {
+                    id: sectionQuery.id,
+                },
+                include: [ Post, {
+                    model: User,
+                    attributes:  ['displayName']
+                }]
+            });
+
+            return res.json(updatedSection)
         }
         catch(error){
-            return res.status(500).json(error);
+            return res.status(500).json(error)
         }
     })
 })
@@ -408,10 +441,31 @@ app.delete('/sections', async(req, res) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
+
+        const sectionQuery = await Section.findOne({
+            where: {
+                title: title
+            }
+        });
+
+        if(!sectionQuery) {
+            return res.status(404).json("Section not found!")
+        }
+
+        const userQuery = await User.findOne({
+            where: {
+                id: sectionQuery.UserId
+            }
+        });
+        console.log(userQuery.displayName+' '+req.session.data)
+        if(!userQuery || (userQuery.displayName != req.session.data)){
+            return res.status(401).json("Unauthorized!")
+        }
+        
         try{
             const section = await Section.destroy({
                 where: {
-                    title: title
+                    title: sectionQuery.title
                 }
             });
             return res.json(title+" was succesfully deleted!");
@@ -941,6 +995,70 @@ app.delete('/shits', async(req, res) => {
     })
 })
 //The above is HTTP requests for Shit data.
+
+//The below is HTTP requests for search.
+app.get('/search/:paramaters', async(req, res) => {
+    const { paramaters } = req.params;
+    const decodedParams = '%'+decodeURIComponent(paramaters)+'%'
+    try {
+        const posts = await Post.findAll({
+            where: {
+                [Op.or]: [{
+                    title: {
+                        [Op.iLike]: decodedParams
+                    } 
+                },  {
+                    body: {
+                        [Op.iLike]: decodedParams
+                    }
+                }]
+
+            },
+            include: [Section, Shit, {
+                model: User,
+                attributes:  ['displayName']
+            }]
+        });
+        const sections = await Section.findAll({
+            where: {
+                [Op.or]: [{
+                    title: {
+                        [Op.iLike]: decodedParams
+                    } 
+                },  {
+                    description: {
+                        [Op.iLike]: decodedParams
+                    }
+                }]
+
+            },
+            include: {
+                model: User,
+                attributes:  ['displayName']
+            }
+        });
+        const users = await User.findAll({
+            where: {
+                displayName: {
+                    [Op.iLike]: decodedParams
+                }
+            },
+            attributes: ['displayName']
+        })
+        const searchResults = {
+            Posts: posts,
+            Sections: sections,
+            Users: users
+        }
+
+        return res.json(searchResults);
+    }
+    catch(error){
+        console.log(error)
+        return res.status(500).json(error)
+    }
+})
+//The above is HTTP requests for search.
 
 const port = 3000
 app.listen(port, async () =>{
