@@ -32,12 +32,12 @@ function Search(props){
                     const error = (data && data.message) || response.status;
                     return Promise.reject(error);
                 }
-
+                console.log(data);
                 setUserId(sessionStorage.getItem('id'))
                 setSections(data.Sections)
                 setPosts(data.Posts)
                 setUsers(data.Users)
-                console.log(data);
+
             })
             .catch(error => {
                 console.error('Error! ', error);

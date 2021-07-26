@@ -6,48 +6,57 @@ import deleteIcon from '../images/icons8-delete-96.png'
 
 function Section(props) {
     const [section, setSection] = useState({})
+    const [memberships, setMemberships] = useState([])
+    const [moderator, setModerator] = useState({})
+    const [isMember, setIsMember] = useState(false)
     const [posts, setPosts] = useState([])
     const [userId, setUserId] = useState()
     const [editing, setEditing] = useState(false)
     const [warning, setWarning] = useState('')
-    const [sectionChief, setSectionChief] = useState({})
-    const [memberships, setMemberships] = useState([])
 
 
-    useEffect(() => {
-        const fetchData = async() => {
-            await fetch('/sections/'+props.viewFocus.name, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            })
-            .then(async response => {
-                const isJson = response.headers.get('content-type')?.includes('application/json');
-                const data = isJson && await response.json();
-                
-    
-                // check for error response
-                if (!response.ok) {
-                    // get error message from body or default to response status 
-                    const error = (data && data.message) || response.status;
-                    return Promise.reject(error);
-                }
+    const fetchData = async() => {
+        console.log(props.viewFocus.name)
+        await fetch('/sections/'+props.viewFocus.name, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        })
+        .then(async response => {
+            const isJson = response.headers.get('content-type')?.includes('application/json');
+            const data = isJson && await response.json();
+            
 
-                setUserId(sessionStorage.getItem('id'))
-                setSectionChief(data.Users[0])
-                setMemberships(data.Users)
-                setSection(data)
-                setPosts(data.Posts)
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error! ', error);
-            })
-        }
-        
+            // check for error response
+            if (!response.ok) {
+                // get error message from body or default to response status 
+                const error = (data && data.message) || response.status;
+                window.alert(error)
+                return Promise.reject(error);
+            }
+            console.log(data)
+
+            setSection(data)
+            setMemberships(data.members)
+            setModerator(data.members[0])
+            setPosts(data.Posts)
+            setUserId(sessionStorage.getItem('id'))
+            const membership = membershipCheck(data.members, sessionStorage.getItem('id'))
+            console.log(membership)
+            setIsMember(membership)
+
+        })
+        .catch(error => {
+            console.error('Error! ', error);
+        })
+    }
+
+
+
+    useEffect(() => {  
         fetchData();
 
     }, [props.viewFocus])
@@ -87,7 +96,8 @@ function Section(props) {
             //the data to the console.
             setEditing(false)
             setSection(data)
-            setPosts(data.Posts)
+            setMemberships(section.members)
+            setPosts(section.Posts)
             setWarning("")
             console.log(data);
         })
@@ -140,26 +150,70 @@ function Section(props) {
         })
     }
 
-    const isMember = (id) => {
+    const membershipCheck = (members, id) => {
         let membership = false
-        for(let i = 0; i < memberships.length; i++){
-            membership = memberships[i].Memberships.UserId == id ? true : false
+        console.log(members)
+        for(let i = 0; i < members.length; i++){
+            if(members[i].id == id){
+                membership = true
+            }
         }
 
+        console.log(members, id, membership)
         return membership;
+    }
+
+    const joinButtonClickHandler = async(isMember) => {
+
+        const url = isMember ? '/users/memberships/remove/' : '/users/memberships/add/'
+        console.log(section.title)
+        await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                displayName: sessionStorage.getItem('displayName'),
+                title: section.title,
+                session: sessionStorage.getItem('session')
+            }),
+            credentials: 'include'
+        })
+        .then(async response => {
+            const isJson = response.headers.get('content-type')?.includes('applickaation/json');
+            const data = isJson && await response.json();
+            
+    
+            //If the response is not okay (200).
+            if (!response.ok) {
+                //Display error message on the UI by setting the warning, and reject.
+                const error = (data && data.message) || response.status;
+                setWarning(data);
+                return Promise.reject(error);
+            }
+            //Call the function in the parent to set behaviour after form submission, set the warning and log
+            //the data to the console.
+            setIsMember(!isMember)
+            fetchData()
+            props.onFocusChange({type: "section", name: section.title})
+            console.log(data)
+        })
+        .catch(error => {
+            console.error('Error! ', error);
+        })
     }
 
     return(
     <Row>
         <Row>
             <Col xs={10} sm={10} md={10} lg={9} xl={8}>
-                <h1>{section.title}</h1>
-                <h6>Moderator: {sectionChief.displayName}</h6>
-                {!editing && <span>{section.description}</span>}
-                <h6>{memberships.length} Members</h6>
-                {!isMember(userId) &&
-                    <Button>Join</Button>
-                }
+                <h1>{section && section.title}</h1>
+                <h6>Moderator: {moderator && moderator.displayName}</h6>
+                {!editing && <span>{section && section.description}</span>}
+                <h6>{memberships && memberships.length} Members</h6>
+                <Button onClick={event => joinButtonClickHandler(isMember)}>{!isMember ? 'Become member' : 'Cancel membership'}</Button>
+
                 {editing && 
                 <Form onSubmit={event => submitEditHandler(event)}>
                     <Form.Group controlId="description">

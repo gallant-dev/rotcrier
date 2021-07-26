@@ -191,29 +191,30 @@ app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) =
     const { displayName, start, limit } = req.params;
 
     try {
-        const user = await User.findOne({
+        const userQuery = await User.findOne({
             where: {
                 displayName: displayName
             },
             include: {
                 model: Section,
-                include: {
+                include: [{
+                    model: User,
+                    as: 'members',
+                    attributes: ['id', 'displayName']
+                },{
                     model: Post,
-                    order: [
-                        ['id', 'DESC']
-                    ],
                     include: Shit,
                     offset: start,
                     limit: limit
-                }
+                }]
             },
             attributes: ['id', 'displayName']
         });
-
-        if(!user){
+        console.log(userQuery)
+        if(!userQuery){
             return res.sendStatus(400).json("User not found.")
         }
-        return res.json(user)
+        return res.json(userQuery)
     }
     catch(error) {
         return res.json(error)
@@ -223,9 +224,9 @@ app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) =
 
 app.put('/users', async(req, res) => {
     const { displayName, email, password, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
-            return res.status(400).json("Request denied: invalid session information");
+            return res.status(error).json("Request denied: invalid session information")
         }
         try{
             const user = await User.update({ 
@@ -238,7 +239,124 @@ app.put('/users', async(req, res) => {
                 displayName: displayName
                 }
               });
+
             return res.json({displayName: user.displayName, email: user.email});
+        }
+        catch(error){
+            return res.status(500).json(error);
+        }
+    })
+})
+
+app.put('/users/memberships/add/', async(req, res) => {
+    const { displayName, title, sessionId } = req.body;
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
+        if(error){
+            return res.status(error).json("Request denied: invalid session information")
+        }
+
+        const section = await Section.findOne({
+            where: {
+                title: title
+            }
+        })
+
+        if(!section){
+            return res.json(404).json("Section not found.")
+        }
+        const user = await User.findOne({
+            where: {
+                displayName: displayName
+            }       
+        })
+        
+        if(!user){
+            return res.json(404).json("User not found.")
+        }
+        if(user.displayName != req.session.data){
+            return res.json(401).json("Unauthorized request.")
+        }
+        
+        try{
+            await section.addMembers(user)
+    
+            const updatedUser = await User.findOne({
+                where: {
+                    displayName: user.displayName
+                },
+                attributes: ['id', 'displayName']         
+            })
+
+            const updatedSection = await Section.findOne({
+                where: {
+                    title: section.title
+                },
+                include: {
+                    model: User,
+                    as: 'members',
+                    attributes: ['id', 'displayName']         
+                }       
+            })
+
+            return res.json({User: updatedUser, Section: updatedSection});
+        }
+        catch(error){
+            return res.status(500).json(error);
+        }
+    })
+})
+
+app.put('/users/memberships/remove/', async(req, res) => {
+    const { displayName, title, sessionId } = req.body;
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
+        if(error){
+            return res.status(error).json("Request denied: invalid session information")
+        }
+        
+        const sectionQuery = await Section.findOne({
+            where: {
+                title: title
+            }
+        })
+
+        if(!sectionQuery){
+            return res.json(404).json("Section not found.")
+        }
+        const userQuery = await User.findOne({
+            where: {
+                displayName: displayName
+            }       
+        })
+        
+        if(!userQuery){
+            return res.json(404).json("User not found.")
+        }
+        if(userQuery.displayName != req.session.data){
+            return res.json(401).json("Unauthorized request.")
+        }
+
+        try{
+            await sectionQuery.removeMembers(userQuery)
+    
+            const updatedUser = await User.findOne({
+                where: {
+                    displayName: userQuery.displayName
+                },
+                attributes: ['id', 'displayName']         
+            })
+
+            const updatedSection = await Section.findOne({
+                where: {
+                    title: sectionQuery.title
+                },
+                include: {
+                    model: User,
+                    as: 'members',
+                    attributes: ['id', 'displayName']         
+                }       
+            })
+            console.log({User: updatedUser, Section: updatedSection})
+            return res.json({User: updatedUser, Section: updatedSection});
         }
         catch(error){
             return res.status(500).json(error);
@@ -248,9 +366,9 @@ app.put('/users', async(req, res) => {
 
 app.delete('/users', async(req, res) => {
     const { displayName, sessionId } = req.body;
-    sequelizeSessionStore.get(sessionId, async(error) => {
+    sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
-            return res.status(400).json("Request denied: invalid session information")
+            return res.status(error).json("Request denied: invalid session information")
         }
         try{
             const user = await User.destroy({
@@ -289,41 +407,58 @@ app.post('/sections', async(req, res) => {
                 displayName: req.session.data
             }
         });
-    
+        console.log(userQuery)
         if(titleQuery.length > 0) {
             return res.status(400).json("The title of this section is taken, please try another.")
         }
-        else{
-            try{
-                const UserId = userQuery.id
-                const section = await Section.create({ title, description, UserId })
-                userQuery.addSection(section)
-                return res.json(section)
-            }
-            catch(error){
-                return res.status(500).json(error)
-            }
-    
+        try{
+            const UserId = userQuery.id
+            const section = await Section.create({ title, description, UserId })
+            await section.addMembers(userQuery)
+            const updatedSection = await Section.findOne({
+                where: {
+                    title: title
+                },
+                include: {
+                    model: User,
+                    as: 'members',
+                    attributes: ['id', 'displayName']
+                }
+            })
+            console.log(updatedSection)
+            return res.json(updatedSection)
+        }
+        catch(error){
+            return res.status(500).json(error)
         }
     })
 })
 
 app.get('/sections/:title', async(req, res) => {
     const { title } = req.params;
-    const section = await Section.findOne({
-        where: {
-            title: title
-        },
-        include: [Post, {
-            model: User,
-            attributes:  ['displayName']
-        }]
-    });
-    if(section){
-        return res.json(section);
+    try {
+        const sectionQuery = await Section.findOne({
+            where: {
+                title: title
+            },
+            include: [{
+                model: User,
+                as: 'members',
+                attributes: ['id', 'displayName']
+            },
+            {
+                model: Post
+            }]
+        })
+
+        if(!sectionQuery){
+            return res.status(404).json("Section not found.")
+
+        }
+        return res.json(sectionQuery);
     }
-    else {
-        return res.status(404).json("Section not found.")
+    catch(error){
+        return res.status(error)
     }
 })
 
@@ -421,9 +556,12 @@ app.put('/sections', async(req, res) => {
                 where: {
                     id: sectionQuery.id,
                 },
-                include: [ Post, {
+                include: [{
                     model: User,
-                    attributes:  ['displayName']
+                    as: 'members',
+                    attributes: ['id', 'displayName']
+                }, {
+                    model: Post
                 }]
             });
 
@@ -798,6 +936,10 @@ app.put('/comments/', async(req, res) => {
         if(!commentQuery){
             return res.status(400).json("Comment not found")
         }
+
+        if(comment.user.displayName != req.session.data){
+            return res.status(401).json("Unauthorized")
+        }
     
         try{
 
@@ -835,18 +977,32 @@ app.put('/comments/', async(req, res) => {
 })
 
 app.delete('/comments', async(req, res) => {
-    const { id, sessionId } = req.body;
+    const { UserId, PostId, CommentId, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
+        const user = await User.findOne({
+            where: {
+                id: UserId
+            }
+        })
+        if(!user){
+            return res.status(404).json("User not found!")
+        }
+        if(req.session.data != user.displayName){
+            return res.status(401).json("Please try logging in again!")
+        }
+
         try{
             const comment = await Comment.destroy({
                 where: {
-                    id: id
+                    UserId: UserId,
+                    PostId: PostId,
+                    CommentId: CommentId
                 }
             });
-            return res.json("Your comment was successfully deleted!");
+            return res.json("Comment succesfully deleted!");
         }
         catch(error){
             return res.status(500).json(error);
@@ -1034,7 +1190,8 @@ app.get('/search/:paramaters', async(req, res) => {
             },
             include: {
                 model: User,
-                attributes:  ['displayName']
+                as: 'members',
+                attributes: ['id', 'displayName']
             }
         });
         const users = await User.findAll({
