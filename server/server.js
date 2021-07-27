@@ -170,20 +170,38 @@ app.post('/users/logout', async(req, res) => {
 
 app.get('/users/:displayName', async(req, res) => {
     const { displayName } = req.params;
-    const user = await User.findOne({
+
+    const userQuery = await User.findOne({
         where: {
             displayName: displayName
         },
-        include: Section
+        include:[{
+            model: Section
+        },{
+            model: Post
+        },{
+            model: Comment,
+            include: [{             
+                model: Comment,
+                as: 'parent'
+            },{
+                model: Post
+            }]
+        },{
+            model: Shit
+        }],
+        attributes: ['id', 'displayName']
     });
-    if(user){
-        return res.json({
-            displayName: user.displayName,
-            memberships: user.sections
-        });
-    }
-    else {
+
+    if(!userQuery){
         return res.status(404).json("User not found.")
+    }
+
+    try {
+        return res.json(userQuery)
+    }
+    catch(error) {
+        return res.json(error)
     }
 })
 
@@ -890,6 +908,8 @@ app.get('/comments/:commentId', async(req, res) => {
                 model: User,
                 attributes: ['displayName']
             }
+        },{
+            model: Post
         }]
     });
 

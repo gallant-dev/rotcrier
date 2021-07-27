@@ -26,7 +26,7 @@ function AccountControls(props) {
         );
     }
     return (
-        <UserSettings onLogout={userLoggedout}/>
+        <UserSettings onChangeFocus={props.onChangeFocus} onLogout={userLoggedout}/>
     );
 }
 

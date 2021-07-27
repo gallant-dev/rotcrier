@@ -182,13 +182,42 @@ function Comment(props) {
         <>
         {showComment &&
             <Card className="mt-1">
-                <Card.Header>{comment.User.displayName}</Card.Header>
+                <Card.Header onClick={() => props.onFocusChange({type: 'user', name: comment.User.displayName})}>
+                    <Row>
+                        <Col xs={11} sm={10} md={1011} lg={11} xl={11}>
+                            {comment.User.displayName}
+                        </Col>
+                        <Col xs={1} sm={1} md={1} lg={1} xl={1}>
+                            {comment.UserId == userId && 
+                                <>
+                                    <Image className="edit p-1"
+                                    width={25}
+                                    height={25}
+                                    src={editIcon}
+                                    alt="Edit"
+                                    onClick={event => editingButtonHandler(true)}
+                                    />
+
+                                    <Image className="delete p-1"
+                                    width={25}
+                                    height={25}
+                                    src={deleteIcon}
+                                    alt="Delete"
+                                    onClick={event => deleteButtonHandler()}
+                                    />
+                                </>
+                            }
+                        </Col>
+                    </Row>
+
+                
+                </Card.Header>
                 <Card.Body>
                     <Row>
                         <Col xs={1} sm={1} md={1} lg={1} xl={1}>
                             <Shit shitFor={{type: 'comment', id: comment.id}} />
                         </Col>
-                        <Col xs={10} sm={10} md={10} lg={10} xl={10}>
+                        <Col xs={11} sm={11} md={11} lg={11} xl={11}>
                                 <Card.Text>
                                 {!editing && <span>{comment.body}</span>}
                                 {editing && 
@@ -214,31 +243,10 @@ function Comment(props) {
                                 }
                             </Card.Text>
                             {(!showCommentForm || !(props.commentTarget.type == 'comment' &&
-                            props.commentTarget.id == comment.id)) && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="primary">Comment</Button>}
+                            props.commentTarget.id == comment.id)) && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                             {(showCommentForm && (props.commentTarget.type == 'comment' &&
-                            props.commentTarget.id == comment.id)) && <CommentForm onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}
-                            {comments.length > 0 && comments.map( comment => <Comment key={comment.id} comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
-                        </Col>
-                        <Col xs={1} sm={1} md={1} lg={1} xl={1}>
-                            {comment.UserId == userId && 
-                                <>
-                                    <Image className="edit p-1"
-                                    width={25}
-                                    height={25}
-                                    src={editIcon}
-                                    alt="Edit"
-                                    onClick={event => editingButtonHandler(true)}
-                                    />
-
-                                    <Image className="delete p-1"
-                                    width={25}
-                                    height={25}
-                                    src={deleteIcon}
-                                    alt="Delete"
-                                    onClick={event => deleteButtonHandler()}
-                                    />
-                                </>
-                            }
+                            props.commentTarget.id == comment.id)) && <CommentForm post={props.post} onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}
+                            {comments.length > 0 && comments.map( comment => <Comment post={props.post} key={comment.id} comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
                         </Col>
                     </Row>
                 </Card.Body>

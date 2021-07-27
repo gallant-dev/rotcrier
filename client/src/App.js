@@ -8,6 +8,7 @@ import SectionForm from './components/SectionForm'
 import Section from './components/Section'
 import PostForm from './components/PostForm';
 import Post from './components/Post'
+import User from './components/User'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -41,6 +42,7 @@ function App() {
         {focus.name === "Create a new post" && <PostForm onFocusChange={focusChangeHandler} />}
         {focus.type === "section" && <Section viewFocus={focus} onFocusChange={focusChangeHandler}/>}
         {focus.type === "post" && <Post viewFocus={focus} onFocusChange={focusChangeHandler}/>}
+        {focus.type === "user" && <User viewFocus={focus} onFocusChange={focusChangeHandler} />}
         </div>
       </div>
     </div>

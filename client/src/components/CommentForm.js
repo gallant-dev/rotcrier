@@ -12,8 +12,8 @@ function CommentForm(props) {
         event.preventDefault();
         //Create a form object containing the elements.
         const form = event.target.elements
-        console.log(props.commentTarget.id)
-        const PostId = props.commentTarget.type == 'post' ? props.commentTarget.id : null
+        const PostId = props.post.id
+        console.log(props.post)
         const CommentId = props.commentTarget.type == 'comment' ? props.commentTarget.id : null
         await fetch('/comments', {
             method: 'POST',
@@ -57,7 +57,7 @@ function CommentForm(props) {
     return(
         <Form onSubmit={event => submitHandler(event)}>
             <Form.Group controlId="body">
-                <Form.Label>Comment</Form.Label>
+
                 <Form.Control required as="textarea" rows={8} placeholder="What comment would you like to make?" />
             </Form.Group>
 

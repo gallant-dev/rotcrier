@@ -1,4 +1,4 @@
-import { Navbar, Nav, Form, FormControl, Button, Row, } from 'react-bootstrap'
+import { Navbar, Nav, Form, FormControl, Button, Row, Container, } from 'react-bootstrap'
 import { useState } from 'react'
 import AccountControls from './AccountControls'
 import Menu from './Menu'
@@ -29,14 +29,15 @@ function Header(props) {
     return (
     
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-        <Navbar.Brand href="#home">Rotcrier</Navbar.Brand>
+        <Container>
+        <Navbar.Brand href="#home">rotcrier</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
                 <Menu isLoggedIn={isLoggedIn} onUpdateMemberSections={props.onUpdateMemberSections} onFocusChange={focusHandler} memberSections={props.memberSections} viewFocus={props.viewFocus} />
             </Nav>
             <Nav>
-                <AccountControls setLoggedIn={loginHandler} setLoggedOut={logoutHandler}/>
+                <AccountControls onChangeFocus={focusHandler} setLoggedIn={loginHandler} setLoggedOut={logoutHandler}/>
             </Nav>
         </Navbar.Collapse>
         <Nav>
@@ -52,6 +53,7 @@ function Header(props) {
                     <Button variant="primary" type="submit">Search</Button>
             </Form>
         </Nav>
+        </Container>
     </Navbar>
     );
 }

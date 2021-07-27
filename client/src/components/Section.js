@@ -205,11 +205,11 @@ function Section(props) {
     }
 
     return(
-    <Row>
-        <Row>
+    <Container>
+        <Row className="mb-3">
             <Col xs={10} sm={10} md={10} lg={9} xl={8}>
                 <h1>{section && section.title}</h1>
-                <h6>Moderator: {moderator && moderator.displayName}</h6>
+                <h6 onClick={() => props.onFocusChange({type: 'user', name: moderator.displayName})}>Moderator: {moderator && moderator.displayName}</h6>
                 {!editing && <span>{section && section.description}</span>}
                 <h6>{memberships && memberships.length} Members</h6>
                 <Button onClick={event => joinButtonClickHandler(isMember)}>{!isMember ? 'Become member' : 'Cancel membership'}</Button>
@@ -288,7 +288,7 @@ function Section(props) {
                 </Card> 
             )}
         </Container>
-    </Row>
+    </Container>
     );
 }
 

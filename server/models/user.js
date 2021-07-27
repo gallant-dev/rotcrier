@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         through: 'Memberships'
         }
       )
-
+      User.hasMany(models.Post)
       User.hasMany(models.Section)
       User.hasMany(models.Comment)
       User.hasMany(models.Shit, {

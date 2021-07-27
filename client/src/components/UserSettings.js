@@ -37,9 +37,8 @@ function UserSettings(props) {
 
     return(
         <NavDropdown title={displayName} id="collapsible-nav-dropdown">
-            <NavDropdown.Item href="#action/3.2">History</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">Settings</NavDropdown.Item>
-            <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
+            <NavDropdown.Item onClick={() => props.onChangeFocus({type: 'user', name: displayName})}>Profile</NavDropdown.Item>
+            <NavDropdown.Item onClick={() => logout()}>Logout</NavDropdown.Item>
         </NavDropdown>
     );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Row, Col, Image, Form } from 'react-bootstrap'
+import { Button, Row, Col, Image, Form, Container } from 'react-bootstrap'
 import editIcon from '../images/icons8-edit-48.png'
 import deleteIcon from '../images/icons8-delete-96.png'
 import CommentForm from './CommentForm'
@@ -183,8 +183,10 @@ function Post(props) {
         console.log(comments)
     }
 
+
+
     return(
-        <div>
+        <Container>
             <Row className="justify-content-start">
                 <Col xs={2} sm={1} md={1} lg={1} xl={1}>
                    {post.id && <Shit shitFor={{type: 'post', id: post.id.toString()}} />}
@@ -239,13 +241,13 @@ function Post(props) {
             </Row>
             <Row className="justify-content-center">
                 <Col >
-                {(!showCommentForm || commentTarget.type != "post") && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">Comment</Button>}
+                {(!showCommentForm || commentTarget.type != "post") && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                 </Col>
 
-                {(commentTarget.type === "post" && showCommentForm)  && <CommentForm onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
+                {(commentTarget.type === "post" && showCommentForm)  && <CommentForm post={post} onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
             </Row>
-            {comments.length > 0 && comments.map( comment => <Comment key={comment.id} removeFromParentArray={removeFromParentArray} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
-        </div>
+            {comments.length > 0 && comments.map( comment => <Comment post={post} key={comment.id} removeFromParentArray={removeFromParentArray} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+        </Container>
 
     );
 }

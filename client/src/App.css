@@ -28,9 +28,23 @@
 
 .btn-primary {
   background-color: grey;
+  border-color: olive;
 }
 
 .btn-primary:hover, .btn-primary:focus {
+  color: #fff;
+  background-color: olive;
+  border-color: olive;
+}
+
+.btn-secondary {
+  color: grey;
+  background-color: white;
+  border-color: lightgrey;
+  padding: 0px 2px 3px 2px;
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
   color: #fff;
   background-color: olive;
   border-color: olive;
