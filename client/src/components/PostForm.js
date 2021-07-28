@@ -1,4 +1,4 @@
-import { Form, Button } from 'react-bootstrap'
+import { Form, Button, Container, Row, Col } from 'react-bootstrap'
 import { useState } from 'react'
 
 
@@ -60,35 +60,42 @@ function PostForm(props) {
     }
     
     return(
-        <Form onSubmit={event => submitHandler(event)}>
-            <Form.Group controlId="postTitle">
-                <Form.Label>Title</Form.Label>
-                <Form.Control required type="text" placeholder="Your new post's title" />
+        <Container>
+            <Row className="justify-content-center">
+                <Col  xs={12} sm={12} md={8} lg={8} xl={6}>
+                    <Form onSubmit={event => submitHandler(event)}>
+                        <Form.Group controlId="postTitle">
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control required type="text" placeholder="Your new post's title" />
 
-            </Form.Group>
-            <Form.Group controlId="sectionTitle">
-                <Form.Label>Section</Form.Label>
-                <Form.Control required type="text" placeholder="What section would you like to post in?" />
-            </Form.Group>
+                        </Form.Group>
+                        <Form.Group controlId="sectionTitle">
+                            <Form.Label>Section</Form.Label>
+                            <Form.Control required type="text" placeholder="What section would you like to post in?" />
+                        </Form.Group>
 
-            <Form.Group controlId="body">
-                <Form.Label>Body</Form.Label>
-                <Form.Control required as="textarea" rows={8} placeholder="What message would you like to share?" />
-            </Form.Group>
+                        <Form.Group controlId="body">
+                            <Form.Label>Body</Form.Label>
+                            <Form.Control required as="textarea" rows={8} placeholder="What message would you like to share?" />
+                        </Form.Group>
 
-            <Form.Group controlId="formButtons">
-                <Button variant="primary" className="m-2" onClick={cancelHandler}>
-                    Cancel
-                </Button>
+                        <Form.Group controlId="formButtons">
+                            <Button variant="primary" className="m-2" onClick={cancelHandler}>
+                                Cancel
+                            </Button>
 
-                <Button variant="primary" className="m-2" type="submit">
-                    Submit
-                </Button>
-                <Form.Label style={{color: "red"}}>
-                    {warning}
-                </Form.Label>
-            </Form.Group>
-        </Form>
+                            <Button variant="primary" className="m-2" type="submit">
+                                Submit
+                            </Button>
+                            <Form.Label style={{color: "red"}}>
+                                {warning}
+                            </Form.Label>
+                        </Form.Group>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
+
     );
 }
 export default PostForm

@@ -91,7 +91,7 @@ function SignUp(props) {
                 <Form.Label style={{color: "red"}}>
                     {warning}
                 </Form.Label>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button variant="primary" onClick={handleClose}>
                     Close
                 </Button>
                 <Button variant="primary" type="submit">Submit</Button>

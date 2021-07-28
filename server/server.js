@@ -683,10 +683,13 @@ app.get('/posts/:title', async(req, res) => {
                 title: decodedTitle
             },
             include: [Section, {
+                model: User,
+                attributes: ['id', 'displayName']
+            }, {
                 model: Comment,
                 include: {
                     model: User,
-                    attributes:  ['displayName']
+                    attributes:  ['id', 'displayName']
                 }
             }]
         });

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Image } from 'react-bootstrap'
-import shitIcon from '../images/icons8-triangle-48.png'
-import noShitIcon from '../images/icons8-triangle-48-none.png'
+import shitIcon from '../images/shit.png'
+import noShitIcon from '../images/no-shit.png'
 
 function Shit(props){
     const[shits, setShits] = useState([])

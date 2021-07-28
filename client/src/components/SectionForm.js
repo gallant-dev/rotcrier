@@ -1,4 +1,4 @@
-import { Form, Button } from 'react-bootstrap'
+import { Form, Button, Container, Row, Col } from 'react-bootstrap'
 import { useState } from 'react'
 
 
@@ -59,30 +59,37 @@ function SectionForm(props) {
     }
     
     return(
-        <Form onSubmit={event => submitHandler(event)}>
-            <Form.Group controlId="sectionTitle">
-                <Form.Label>Title</Form.Label>
-                <Form.Control type="text" placeholder="Your new section's title" />
-                <Form.Label style={{color: "red"}}>
-                    {warning}
-                </Form.Label>
-            </Form.Group>
+        <Container>
+            <Row className="justify-content-center">
+                <Col  xs={12} sm={12} md={8} lg={8} xl={6}>
+                    <Form onSubmit={event => submitHandler(event)}>
+                        <Form.Group controlId="sectionTitle">
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control type="text" placeholder="Your new section's title" />
+                            <Form.Label style={{color: "red"}}>
+                                {warning}
+                            </Form.Label>
+                        </Form.Group>
 
-            <Form.Group controlId="description">
-                <Form.Label>Description</Form.Label>
-                <Form.Control as="textarea" rows={8} placeholder="A brief description of the section" />
-            </Form.Group>
+                        <Form.Group controlId="description">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control as="textarea" rows={8} placeholder="A brief description of the section" />
+                        </Form.Group>
 
-            <Form.Group controlId="formButtons">
-                <Button variant="primary" className="m-2" onClick={cancelHandler}>
-                    Cancel
-                </Button>
+                        <Form.Group controlId="formButtons">
+                            <Button variant="primary" className="m-2" onClick={cancelHandler}>
+                                Cancel
+                            </Button>
 
-                <Button variant="primary" className="m-2" type="submit">
-                    Submit
-                </Button>
-            </Form.Group>
-        </Form>
+                            <Button variant="primary" className="m-2" type="submit">
+                                Submit
+                            </Button>
+                        </Form.Group>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
+
     );
 }
 export default SectionForm

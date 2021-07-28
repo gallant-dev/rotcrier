@@ -10,6 +10,11 @@ function CommentForm(props) {
     const submitHandler = async(event) => {
         //Prevent the default page refresh on submit.
         event.preventDefault();
+
+        const UserId = sessionStorage.getItem('id')
+        if(!UserId){
+            return window.alert("You must be logged in to comment!")
+        }
         //Create a form object containing the elements.
         const form = event.target.elements
         const PostId = props.post.id

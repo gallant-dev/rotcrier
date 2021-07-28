@@ -142,7 +142,7 @@ function Comment(props) {
 
     useEffect(() => {
         setUserId(sessionStorage.getItem('id'))
-        fetchData();
+        fetchData()
 
     }, [props.viewFocus])
     
@@ -181,7 +181,7 @@ function Comment(props) {
     return (
         <>
         {showComment &&
-            <Card className="mt-1">
+            <Card>
                 <Card.Header onClick={() => props.onFocusChange({type: 'user', name: comment.User.displayName})}>
                     <Row>
                         <Col xs={11} sm={10} md={1011} lg={11} xl={11}>
@@ -212,7 +212,7 @@ function Comment(props) {
 
                 
                 </Card.Header>
-                <Card.Body>
+                <Card.Body className="pe-0 pb-0">
                     <Row>
                         <Col xs={1} sm={1} md={1} lg={1} xl={1}>
                             <Shit shitFor={{type: 'comment', id: comment.id}} />
@@ -246,7 +246,7 @@ function Comment(props) {
                             props.commentTarget.id == comment.id)) && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                             {(showCommentForm && (props.commentTarget.type == 'comment' &&
                             props.commentTarget.id == comment.id)) && <CommentForm post={props.post} onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}
-                            {comments.length > 0 && comments.map( comment => <Comment post={props.post} key={comment.id} comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+                            {comments.length > 0 && comments.map( comment => <Comment onFocusChange={props.onFocusChange} post={props.post} key={comment.id} comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
                         </Col>
                     </Row>
                 </Card.Body>

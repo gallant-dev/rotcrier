@@ -8,11 +8,7 @@ import Shit from './Shit'
 
 function Post(props) {
     const [post, setPost] = useState({})
-    //Had to set state of section seperately because react is returning null when I access
-    //the section title through the render component on first load only. If the code is edited
-    //and the same code is pasted during run the section title is obtained correctly. Also if I
-    //define the section here seperately from the post it renders correctly. It is almost as if 
-    //in react it starts rendering prior to getting the nested section data.
+    const [creator, setCreator] = useState({})
     const [section, setSection] = useState({})
     const [comments, setComments] = useState([])
     const [userId, setUserId] = useState()
@@ -113,6 +109,7 @@ function Post(props) {
             setSection(data.Section)
             setComments(data.Comments)
             setPost(data)
+            setCreator(data.User)
             setCommentTarget({type: 'post', id: data.id})
             console.log(data);
         })
@@ -188,34 +185,17 @@ function Post(props) {
     return(
         <Container>
             <Row className="justify-content-start">
-                <Col xs={2} sm={1} md={1} lg={1} xl={1}>
+                                <Col xs={2} sm={1} md={1} lg={1} xl={1}>
                    {post.id && <Shit shitFor={{type: 'post', id: post.id.toString()}} />}
                 </Col>
+                <Col>
+                <Row className="justify-content-start">
                 <Col xs={10} sm={10} md={10} lg={9} xl={8}>
                     {section && <h2 onClick={event => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h2>}
                     <h1>{post.title}</h1>
+                    <h6 onClick={() => props.onFocusChange({type: 'user', name: creator.displayName})}>created by: {creator.displayName}</h6>
                     {!editing && <span>{post.body}</span>}
-                    {editing && 
-                    <Form onSubmit={event => submitEditHandler(event)}>
-                        <Form.Group controlId="body">
-                            <Form.Label>Body</Form.Label>
-                            <Form.Control required as="textarea" rows={8}>{post.body}</Form.Control>
-                        </Form.Group>
-            
-                        <Form.Group controlId="formButtons">
-                            <Button variant="primary" className="m-2" onClick={event => editingButtonHandler(false)}>
-                                Cancel
-                            </Button>
-            
-                            <Button variant="primary" className="m-2" type="submit">
-                                Submit
-                            </Button>
-                            <Form.Label style={{color: "red"}}>
-                                {warning}
-                            </Form.Label>
-                        </Form.Group>
-                    </Form>              
-                    }
+
                 </Col>
                 <Col xs={1} sm={1} md={1} lg={1} xl={1}>
                 {post.UserId == userId && 
@@ -238,13 +218,43 @@ function Post(props) {
                     </>
                 }
                 </Col>
+                </Row>
+                <Row className="justify-content-start">
+                {(commentTarget.type === "post" && showCommentForm)  && <CommentForm post={post} onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
+                    {editing && 
+                    <Form onSubmit={event => submitEditHandler(event)}>
+                        <Form.Group controlId="body">
+                            <Form.Label>Body</Form.Label>
+                            <Form.Control required as="textarea" rows={8}>{post.body}</Form.Control>
+                        </Form.Group>
+            
+                        <Form.Group controlId="formButtons">
+                            <Button variant="primary" className="m-2" onClick={event => editingButtonHandler(false)}>
+                                Cancel
+                            </Button>
+            
+                            <Button variant="primary" className="m-2" type="submit">
+                                Submit
+                            </Button>
+                            <Form.Label style={{color: "red"}}>
+                                {warning}
+                            </Form.Label>
+                        </Form.Group>
+                    </Form>              
+                    }
+                </Row>
+                
+                </Col>
+
+
+
             </Row>
             <Row className="justify-content-center">
                 <Col >
                 {(!showCommentForm || commentTarget.type != "post") && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                 </Col>
 
-                {(commentTarget.type === "post" && showCommentForm)  && <CommentForm post={post} onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
+
             </Row>
             {comments.length > 0 && comments.map( comment => <Comment post={post} key={comment.id} removeFromParentArray={removeFromParentArray} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
         </Container>

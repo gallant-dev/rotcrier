@@ -49,33 +49,43 @@ function TopPosts(props){
 
         <Container>
         <h2>Top Posts</h2>
-            {(posts.length > 0) &&
-            
-               posts.map(post =>
-                <Card key={post.id+post.title}>
-                <Card.Body>
-                    <Row>
-                        <Col xs={1} sm={1} md={1} lg={1} xl={1}>
-                            <Shit shitFor={{type: 'post', id: post.id.toString()}} />
-                        </Col>
-                        <Col xs={10} sm={11} md={11} lg={11} xl={11} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
-                            <Card.Title>{
-                            post.title.length > 125 ?
-                            post.title.substring(0, 125)+'...' :
-                            post.title
-                            }
-                            </Card.Title>
-                            <Card.Text>
-                            {
-                                post.body.length > 125 ?
-                                post.body.substring(0, 125)+'...' :
-                                post.body
-                                }
-                            </Card.Text>                          
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card> 
+            {(posts.length > 0) &&          
+               posts.map((post, index) =>
+               <Row>
+                   <Col xs={1} sm={1} md={1} lg={1} xl={1} >
+                       <Row className="justify-content-end">
+                           <Col className="align-middle">
+                                <h6>{index+1}</h6>
+                           </Col>
+                       </Row>
+                   </Col>
+                   <Col xs={11} sm={11} md={11} lg={11} xl={11}>
+                        <Card key={post.id+post.title}>
+                            <Card.Body>
+                                <Row>
+                                    <Col xs={2} sm={2} md={2} lg={2} xl={2}>
+                                        <Shit shitFor={{type: 'post', id: post.id.toString()}} />
+                                    </Col>
+                                    <Col xs={10} sm={10} md={10} lg={9} xl={8} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                                        <Card.Title>{
+                                        post.title.length > 125 ?
+                                        post.title.substring(0, 125)+'...' :
+                                        post.title
+                                        }
+                                        </Card.Title>
+                                        <Card.Text>
+                                        {
+                                            post.body.length > 125 ?
+                                            post.body.substring(0, 125)+'...' :
+                                            post.body
+                                            }
+                                        </Card.Text>                          
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Card> 
+                   </Col>
+               </Row>
                 )
             }
         </Container>

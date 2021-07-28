@@ -105,15 +105,14 @@ function Home(props){
         <Container>
         <h2>Recent Updates</h2>
             {(posts.length > 0) &&
-            
                posts.map(post =>
                 <Card key={post.id+post.title}>
                 <Card.Body>
                     <Row>
-                        <Col sm={1}>
+                        <Col xs={2} sm={2} md={2} lg={2} xl={2}>
                             <Shit shitFor={{type: 'post', id: post.id.toString()}} />
                         </Col>
-                        <Col onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                        <Col xs={10} sm={10} md={10} lg={9} xl={8} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
                             <Card.Title>{
                             post.title.length > 125 ?
                             post.title.substring(0, 125)+'...' :
