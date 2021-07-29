@@ -5,6 +5,7 @@ var session = require('express-session')
 const { Op } = require("sequelize");
 const SessionStore = require('express-session-sequelize')(session.Store);
 var crypto = require('crypto');
+const path = require('path')
 
 const sequelizeSessionStore = new SessionStore({
     db: sequelize,
@@ -23,8 +24,13 @@ app.use([
         resave: false,
         saveUninitialized: true,
         cookie: { secure: 'auto' }
-    })
+    }),
+    express.static(path.join(__dirname, 'build'))
 ]);
+
+app.get('/', async(req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'))
+})
 
 //The following is HTTP requests for User data.
 app.post('/users', async(req, res) => {
