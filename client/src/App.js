@@ -11,6 +11,7 @@ import Post from './components/Post'
 import User from './components/User'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import { clean } from 'unzalgo';
 
 function App() {
   const[focus, setFocus] = useState({type: "menu", name: "Home"})
@@ -27,7 +28,8 @@ function App() {
   }
 
   const searchHandler = (params) => {
-    setSearch(params)
+    const newParams = clean(params)
+    setSearch(newParams)
   }
 
   const defaultSectionHandler = (section) =>{

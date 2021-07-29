@@ -237,7 +237,7 @@ function Post(props) {
                     <Form onSubmit={event => submitEditHandler(event)}>
                         <Form.Group controlId="body">
                             <Form.Label>Body</Form.Label>
-                            <Form.Control required as="textarea" rows={8} defaultValu={post.body}></Form.Control>
+                            <Form.Control required as="textarea" rows={8} defaultValue={post.body}></Form.Control>
                         </Form.Group>
             
                         <Form.Group controlId="formButtons">

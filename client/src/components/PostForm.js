@@ -28,9 +28,9 @@ function PostForm(props) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                title: form.postTitle.value,
-                body: form.body.value,
-                sectionTitle: form.sectionTitle.value,
+                title: form.postTitle.value.normalize(),
+                body: form.body.value.normalize(),
+                sectionTitle: form.sectionTitle.value.normalize(),
                 UserId: sessionStorage.getItem('id'),
                 session: sessionStorage.getItem('session')
             }),

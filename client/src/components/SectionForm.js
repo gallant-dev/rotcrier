@@ -16,6 +16,7 @@ function SectionForm(props) {
         event.preventDefault();
         //Create a form object containing the elements.
         const form = event.target.elements
+
         await fetch('/sections', {
             method: 'POST',
             headers: {

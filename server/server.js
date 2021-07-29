@@ -6,6 +6,7 @@ const { Op } = require("sequelize");
 const SessionStore = require('express-session-sequelize')(session.Store);
 var crypto = require('crypto');
 const path = require('path')
+var unzalgo = require('unzalgo');
 
 const sequelizeSessionStore = new SessionStore({
     db: sequelize,
@@ -35,16 +36,20 @@ app.get('/', async(req, res) => {
 //The following is HTTP requests for User data.
 app.post('/users', async(req, res) => {
     const { displayName, email, password } = req.body;
+    
+    const newDisplayName = unzalgo.clean(displayName)
+    const newEmail = unzalgo.clean(email)
+    const newPassword = unzalgo.clean(password)
 
     const nameQuery = await User.findAll({
         where: {
-            displayName: displayName
+            displayName: newDisplayName
         }
     });
 
     const emailQuery = await User.findAll({
         where: {
-            email: email
+            email: newEmail
         }
     });
 
@@ -63,7 +68,7 @@ app.post('/users', async(req, res) => {
             const salt = crypto.randomBytes(32).toString('hex')
             
             //Generate the key using the password and the salt. For aes-256-gcm it needs to be 32 bytes. 
-            crypto.scrypt(password, salt, 32, (err, key) => {
+            crypto.scrypt(newPassword, salt, 32, (err, key) => {
               if (err) throw err;
 
               //Get the initial vector from the local filesystem.
@@ -86,8 +91,8 @@ app.post('/users', async(req, res) => {
                   encrypted += cipher.final('hex')
   
                   const user = await User.create({
-                      displayName: displayName,
-                      email, 
+                      displayName: newDisplayName,
+                      email: newEmail, 
                       salt: salt, 
                       password: encrypted
                   })
@@ -109,9 +114,12 @@ app.post('/users', async(req, res) => {
 app.post('/users/login', async(req, res) => {
     const { displayName, password } = req.body;
 
+    const newDisplayName = unzalgo.clean(displayName)
+    const newPassword = unzalgo.clean(password)
+
     const nameQuery = await User.findOne({
         where: {
-            displayName: displayName
+            displayName: newDisplayName
         },
         include: Section
     })
@@ -125,7 +133,7 @@ app.post('/users/login', async(req, res) => {
         const salt =  nameQuery.salt
             
         //Use the previously stored salt and the password entered by the user to generate key.
-        crypto.scrypt(password, salt, 32, (err, key) => {
+        crypto.scrypt(newPassword, salt, 32, (err, key) => {
             if (err) throw err;
 
             //Obtain the stored iv from the local file system.
@@ -255,18 +263,71 @@ app.put('/users', async(req, res) => {
             return res.status(error).json("Request denied: invalid session information")
         }
         try{
-            const user = await User.update({ 
-                displayName: displayName,
-                email: email,
-                salt: salt, 
-                password: password
-                }, {
-                where: {
-                displayName: displayName
-                }
-              });
+            const newDisplayName = unzalgo.clean(displayName)
+            const newEmail = unzalgo.clean(email)
+            const newPassword = unzalgo.clean(password)
 
-            return res.json({displayName: user.displayName, email: user.email});
+            const userQuery = await User.findOne({
+                where: {
+                    displayName: newDisplayName
+                }
+            })
+
+            if(!userQuery){
+                return res.status(404).json("User not found")
+            }
+                //Generate random salt for user to be stored with the password in the database.
+                const salt = crypto.randomBytes(32).toString('hex')
+    
+                //Generate the key using the password and the salt. For aes-256-gcm it needs to be 32 bytes. 
+                crypto.scrypt(newPassword, salt, 32, (err, key) => {
+                    if (err) throw err;
+    
+                    //Get the initial vector from the local filesystem.
+                    fs.readFile('ciphertext.json', 'utf8', async(error, data) => {
+                        if(error){
+                            console.error(error)
+                            return
+                        }
+    
+                        //Parse the data inside the file to convert it to a JSON object
+                        const iv = JSON.parse(data).iv
+    
+                        //Create the cipher using the key generated and the iv obtained from the
+                        //local file system.
+                        const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
+                        
+                        //Use cipher update to update the cipher using utf8 to hex as output.
+                        let encrypted = cipher.update(salt, 'utf8', 'hex')
+                        //Finalize the cipher object in hex.
+                        encrypted += cipher.final('hex')
+        
+                        const user = await User.update({ 
+                            displayName: userQuery.displayName,
+                            email: newEmail,
+                            salt: salt, 
+                            password: password
+                            }, {
+                            where: {
+                            displayName: displayName
+                            }
+                          });
+
+                        const updatedUser = await User.findOne({
+                            where: {
+                                displayName: newDisplayName
+                            },
+                            attributes: ['id', 'displayName']
+                        })
+                        req.session.data = updatedUser.displayName;
+                        return res.json({
+                        id: updatedUser.id,
+                        displayName: req.session.data,
+                        session: req.session.id
+                        });
+                    })
+                });
+        
         }
         catch(error){
             return res.status(500).json(error);
@@ -431,11 +492,18 @@ app.post('/sections', async(req, res) => {
             return res.status(error).json("Request denied: invalid session information")
         }
 
+        const newTitle = unzalgo.clean(title)
+        const newDescription = unzalgo.clean(description)
+
         const titleQuery = await Section.findAll({
             where: {
-                title: title
+                title: newTitle
             }
         });
+
+        if(titleQuery.length > 0) {
+            return res.status(400).json("The title of this section is taken, please try another.")
+        }
 
 
         const userQuery = await User.findOne({
@@ -443,17 +511,18 @@ app.post('/sections', async(req, res) => {
                 displayName: req.session.data
             }
         });
-        console.log(userQuery)
-        if(titleQuery.length > 0) {
-            return res.status(400).json("The title of this section is taken, please try another.")
+
+        if(!userQuery){
+            return res.status(404).json("User not found")
         }
+
         try{
             const UserId = userQuery.id
-            const section = await Section.create({ title, description, UserId })
+            const section = await Section.create({title: newTitle, description: newDescription, UserId })
             await section.addMembers(userQuery)
             const updatedSection = await Section.findOne({
                 where: {
-                    title: title
+                    title: newTitle
                 },
                 include: {
                     model: User,
@@ -461,7 +530,6 @@ app.post('/sections', async(req, res) => {
                     attributes: ['id', 'displayName']
                 }
             })
-            console.log(updatedSection)
             return res.json(updatedSection)
         }
         catch(error){
@@ -557,9 +625,12 @@ app.put('/sections', async(req, res) => {
             return res.status(error).json("Request denied: invalid session information")
         }
 
+        const newTitle = unzalgo.clean(title)
+        const newDescription = unzalgo.clean(description)
+
         const sectionQuery = await Section.findOne({
             where: {
-                title: title
+                title: newTitle
             }
         });
 
@@ -581,7 +652,7 @@ app.put('/sections', async(req, res) => {
             const section = await Section.update({ 
                 id: sectionQuery.id,
                 title: sectionQuery.title, 
-                description: description, 
+                description: newDescription, 
                 UserId: sectionQuery.UserId, 
                 }, {
                 where: {
@@ -658,14 +729,19 @@ app.post('/posts', async(req, res) => {
         if(error){
             return res.status(error).json("Invalid session credentials. Please try relogging in.")
         }
+
+        const newTitle = unzalgo.clean(title)
+        const newSectionTitle = unzalgo.clean(sectionTitle)
+        const newBody = unzalgo.clean(body)
+
         const titleQuery = await Post.findAll({
             where: {
-                title: title
+                title: newTitle
             }
         });
         const sectionQuery = await Section.findOne({
             where: {
-                title: sectionTitle
+                title: newSectionTitle
             }
         });
 
@@ -677,8 +753,8 @@ app.post('/posts', async(req, res) => {
         }
         try{
             const post = await Post.create({ 
-                title: title, 
-                body: body, 
+                title: newTitle, 
+                body: newBody, 
                 UserId: UserId, 
                 SectionId: sectionQuery.id });
             return res.json(post);
@@ -793,6 +869,8 @@ app.put('/posts', async(req, res) => {
             return res.status(error).json("Request denied: invalid session information")
         }
 
+        const newBody = unzalgo.clean(body)
+
         const postQuery = await Post.findOne({
             where: {
                 id: id
@@ -822,7 +900,7 @@ app.put('/posts', async(req, res) => {
             const post = await Post.update({ 
                 id: postQuery.id,
                 title: postQuery.title, 
-                body: body, 
+                body: newBody, 
                 UserId: postQuery.UserId, 
                 SectionId: postQuery.SectionId 
                 }, {
@@ -905,9 +983,11 @@ app.post('/comments', async(req, res) => {
         }
     })
 
+    const newBody = unzalgo.clean(body)
+
     const commentQuery = await Comment.findAll({
         where: {
-            body: body,
+            body: newBody,
             UserId: UserId,
             PostId: PostId,
             CommentId: CommentId
@@ -919,7 +999,7 @@ app.post('/comments', async(req, res) => {
     }
 
     try{
-        const comment = await Comment.create({ body, UserId, PostId, CommentId});
+        const comment = await Comment.create({body: newBody, UserId, PostId, CommentId});
         return res.json(comment);
     }
     catch(error){
@@ -974,6 +1054,8 @@ app.put('/comments/', async(req, res) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
+
+        const newBody = unzalgo.clean(body)
         const commentQuery = await Comment.findOne({
             where: {
                 id: id
@@ -1008,9 +1090,22 @@ app.put('/comments/', async(req, res) => {
     
         try{
 
+            const commentAvailability = await Comment.findOne({
+                where: {
+                    body: newBody,
+                    UserId: commentQuery.UserId,
+                    PostId: commentQuery.PostId, 
+                    CommentId: commentQuery.CommentId
+                }
+            })
+
+            if(commentAvailability){
+                return res.status(400).json("Comment already made!")
+            }
+
             const comment = await Comment.update({ 
                 id: commentQuery.id,
-                body: body,
+                body: newBody,
                 UserId: commentQuery.UserId,
                 PostId: commentQuery.PostId, 
                 CommentId: commentQuery.CommentId
@@ -1302,6 +1397,6 @@ app.get('/search/:paramaters', async(req, res) => {
 const port =  process.env.PORT || 3001;
 app.listen(port, async () =>{
     console.log(`Listening on port ${port}!`)
-    await sequelize.sync(); // Use force: true if table needs to be remade.
+    await sequelize.sync({force: true}); // Use force: true if table needs to be remade.
     console.log(`Database synced.`)
 })

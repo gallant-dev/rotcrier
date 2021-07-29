@@ -18,8 +18,8 @@ function CommentForm(props) {
         //Create a form object containing the elements.
         const form = event.target.elements
         const PostId = props.post.id
-        console.log(props.post)
         const CommentId = props.commentTarget.type == 'comment' ? props.commentTarget.id : null
+
         await fetch('/comments', {
             method: 'POST',
             headers: {
