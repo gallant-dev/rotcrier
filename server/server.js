@@ -1293,9 +1293,9 @@ app.get('/search/:paramaters', async(req, res) => {
 })
 //The above is HTTP requests for search.
 
-const port =  3000
+const port =  process.env.PORT || 3001;
 app.listen(port, async () =>{
     console.log(`Listening on port ${port}!`)
-    await sequelize.sync({ force: true}); // Use force: true if table needs to modified.
+    await sequelize.sync(); // Use force: true if table needs to be remade.
     console.log(`Database synced.`)
 })
