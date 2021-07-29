@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Image } from 'react-bootstrap'
+import { Image, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import shitIcon from '../images/shit.png'
 import noShitIcon from '../images/no-shit.png'
 
@@ -15,7 +15,7 @@ function Shit(props){
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            },
+            },  
             credentials: 'include'
         })
         .then(async response => {
@@ -136,12 +136,23 @@ function Shit(props){
 
     }
 
-    return(
-        <div className="text-center">
-            {<h6>{shits.length}</h6>}
-            <Image onClick={() => clickShitHandler()} width={35} height={35} src={shitGiven ? shitIcon : noShitIcon} />
-        </div>
+    const renderTooltip = (shitGiven) => (
+        <Tooltip id="shit-tooltip" {...props}>
+          {!shitGiven ? 'Do you give a shit?' : 'Shit given!'}
+        </Tooltip>
+      );
+      
 
+    return(
+        <OverlayTrigger
+        placement="right"
+        delay={{ show: 250, hide: 400 }}
+        overlay={renderTooltip(shitGiven)}>
+            <div className="text-center">
+                {<h6>{shits.length}</h6>}
+                <Image onClick={() => clickShitHandler()} width={35} height={35} src={shitGiven ? shitIcon : noShitIcon} />
+            </div>
+        </OverlayTrigger>
     );
 }
 
