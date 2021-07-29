@@ -216,6 +216,7 @@ app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) =
             },
             include: {
                 model: Section,
+                as: 'memberships',
                 include: [{
                     model: User,
                     as: 'members',
@@ -274,41 +275,47 @@ app.put('/users/memberships/add/', async(req, res) => {
             return res.status(error).json("Request denied: invalid session information")
         }
 
-        const section = await Section.findOne({
+        const sectionQuery = await Section.findOne({
             where: {
                 title: title
             }
         })
 
-        if(!section){
+        if(!sectionQuery){
             return res.json(404).json("Section not found.")
         }
-        const user = await User.findOne({
+
+        const userQuery = await User.findOne({
             where: {
                 displayName: displayName
             }       
         })
         
-        if(!user){
+        if(!userQuery){
             return res.json(404).json("User not found.")
         }
-        if(user.displayName != req.session.data){
+        if(userQuery.displayName != req.session.data){
             return res.json(401).json("Unauthorized request.")
+        }
+
+        
+        if(sectionQuery.UserId == userQuery.id){
+            return res.json(400).json("You are the moderator!.")
         }
         
         try{
-            await section.addMembers(user)
+            await sectionQuery.addMembers(userQuery)
     
             const updatedUser = await User.findOne({
                 where: {
-                    displayName: user.displayName
+                    displayName: userQuery.displayName
                 },
                 attributes: ['id', 'displayName']         
             })
 
             const updatedSection = await Section.findOne({
                 where: {
-                    title: section.title
+                    title: sectionQuery.title
                 },
                 include: {
                     model: User,
@@ -352,6 +359,10 @@ app.put('/users/memberships/remove/', async(req, res) => {
         }
         if(userQuery.displayName != req.session.data){
             return res.json(401).json("Unauthorized request.")
+        }
+
+        if(sectionQuery.UserId == userQuery.id){
+            return res.json(400).json("You can't abandon your section!")
         }
 
         try{
@@ -1282,7 +1293,7 @@ app.get('/search/:paramaters', async(req, res) => {
 })
 //The above is HTTP requests for search.
 
-const port = 3000
+const port =  3000
 app.listen(port, async () =>{
     console.log(`Listening on port ${port}!`)
     await sequelize.sync({ force: true}); // Use force: true if table needs to modified.

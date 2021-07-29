@@ -28,11 +28,9 @@ function Home(props){
                     const error = (data && data.message) || response.status;
                     return Promise.reject(error);
                 }
-                console.log(data)
                 setUser(data)
-                const postArray = data.Sections.map(section => section.Posts).flat().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+                const postArray = data.memberships.map(section => section.Posts).flat().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
                 setPosts(postArray)
-                console.log(postArray)
                 if(postArray.length == 0){
                     props.onFocusChange({type: 'menu', name: 'Top Posts'})
                 }
@@ -62,15 +60,8 @@ function Home(props){
                     const error = (data && data.message) || response.status;
                     return Promise.reject(error);
                 }
-                console.log(data)
                 const postArray = data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
                 setPosts(postArray)
-                console.log(postArray.length)
-                if(postArray.length == 0){
-                    props.onFocusChange({type: 'menu', name: 'Top Posts'})
-                }
-                console.log(postArray)
-                console.log(data)
             })
             .catch(error => {
                 console.error('Error! ', error);

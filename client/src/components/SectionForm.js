@@ -38,7 +38,7 @@ function SectionForm(props) {
             if (!response.ok) {
                 //Display error message on the UI by setting the warning, and reject.
                 const error = (data && data.message) || response.status;
-                //setWarning(data);
+                setWarning(data);
                 return Promise.reject(error);
             }
             //Call the function in the parent to set behaviour after form submission, set the warning and log
@@ -55,7 +55,7 @@ function SectionForm(props) {
 
     //Sets the focus to "Home" on cancellation.
     const cancelHandler = () => {
-        props.onFocusChange("Home")
+        props.onFocusChange({type: 'menu', name: "Home"})
     }
     
     return(

@@ -170,18 +170,6 @@ function Post(props) {
         })
     }
 
-    const removeFromParentArray = (remove) => {
-        const index = comments.findIndex(comment => comment.id === remove.id)
-        console.log(index)
-        console.log(remove)
-        if(index > -1) {
-            let newArray = comments.splice(index, 1)
-            setComments(newArray)
-        }
-
-        console.log(comments)
-    }
-
     const Body = (props) => {
         if(!props.body){
             return
@@ -273,10 +261,10 @@ function Post(props) {
             </Row>
             <Row className="justify-content-center">
                 <Col >
-                {(!showCommentForm || commentTarget.type != "post") && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
+                {(!showCommentForm || commentTarget.type != "post") && <Button className="mb-3" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                 </Col>
             </Row>
-            {comments.length > 0 && comments.map( comment => <Comment section={section} post={post} key={comment.id} removeFromParentArray={removeFromParentArray} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+            {comments.length > 0 && comments.map( comment => <Comment section={section} post={post} key={comment.id} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
         </Container>
 
     );

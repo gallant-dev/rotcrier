@@ -256,7 +256,7 @@ function Comment(props) {
                                 }
                             </Card.Text>
                             {(!showCommentForm || !(props.commentTarget.type == 'comment' &&
-                            props.commentTarget.id == comment.id)) && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
+                            props.commentTarget.id == comment.id)) && <Button className="mb-3" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                             {(showCommentForm && (props.commentTarget.type == 'comment' &&
                             props.commentTarget.id == comment.id)) && <CommentForm post={props.post} onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}
                             {comments.length > 0 && comments.map( comment => <Comment onFocusChange={props.onFocusChange} section={props.section} post={props.post} key={comment.id} comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}

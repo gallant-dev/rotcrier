@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.belongsToMany(models.Section, { 
-        through: 'Memberships'
+        through: 'Memberships',
+        as: 'memberships'
         }
       )
       User.hasMany(models.Post)

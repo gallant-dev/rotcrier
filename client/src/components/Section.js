@@ -168,6 +168,9 @@ function Section(props) {
         if(!UserId){
             return window.alert("You must be logged in to join!")
         }
+        if(section.UserId == UserId){
+            return window.alert("You are the moderator you can't abandon your section!")
+        }
         const url = isMember ? '/users/memberships/remove/' : '/users/memberships/add/'
         console.log(section.title)
         await fetch(url, {
