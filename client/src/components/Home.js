@@ -33,7 +33,9 @@ function Home(props){
                 const postArray = data.Sections.map(section => section.Posts).flat().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
                 setPosts(postArray)
                 console.log(postArray)
-                console.log(data)
+                if(postArray.length == 0){
+                    props.onFocusChange({type: 'menu', name: 'Top Posts'})
+                }
             })
             .catch(error => {
                 console.error('Error! ', error);
@@ -63,6 +65,10 @@ function Home(props){
                 console.log(data)
                 const postArray = data.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
                 setPosts(postArray)
+                console.log(postArray.length)
+                if(postArray.length == 0){
+                    props.onFocusChange({type: 'menu', name: 'Top Posts'})
+                }
                 console.log(postArray)
                 console.log(data)
             })

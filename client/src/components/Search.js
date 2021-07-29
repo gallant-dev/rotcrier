@@ -35,7 +35,8 @@ function Search(props){
                 console.log(data);
                 setUserId(sessionStorage.getItem('id'))
                 setSections(data.Sections)
-                setPosts(data.Posts)
+                const postArray = data.Posts.sort((a, b) => b.Shits.length - a.Shits.length)
+                setPosts(postArray)
                 setUsers(data.Users)
 
             })

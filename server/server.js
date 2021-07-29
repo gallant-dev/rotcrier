@@ -178,7 +178,8 @@ app.get('/users/:displayName', async(req, res) => {
         include:[{
             model: Section
         },{
-            model: Post
+            model: Post,
+            include: Shit
         },{
             model: Comment,
             include: [{             
@@ -186,7 +187,7 @@ app.get('/users/:displayName', async(req, res) => {
                 as: 'parent'
             },{
                 model: Post
-            }]
+            }, Shit]
         },{
             model: Shit
         }],
@@ -687,10 +688,10 @@ app.get('/posts/:title', async(req, res) => {
                 attributes: ['id', 'displayName']
             }, {
                 model: Comment,
-                include: {
+                include: [{
                     model: User,
                     attributes:  ['id', 'displayName']
-                }
+                }, Shit]
             }]
         });
         if(!post){
@@ -785,6 +786,20 @@ app.put('/posts', async(req, res) => {
             return res.status(400).json("Unable to find post!")
         }
 
+        const userQuery = await User.findOne({
+            where: {
+                displayName: req.session.data
+            }
+        })
+
+        if(!userQuery) {
+            return res.status(400).json("User not found.")
+        }
+
+        if(userQuery.id != postQuery.UserId){
+            return res.status(401).json("Request denied: unauthorized")
+        }
+
         try{
 
             const post = await Post.update({ 
@@ -825,27 +840,27 @@ app.delete('/posts', async(req, res) => {
             return res.status(error).json("Request denied: invalid session information")
         }
 
-        const post = await Post.findOne({
+        const postQuery = await Post.findOne({
             where: {
                 id: id
             },
             include: Section
         });
 
-        if(!post) {
+        if(!postQuery) {
             return res.status(400).json("Post not found.")
         }
-        const user = await User.findOne({
+        const userQuery = await User.findOne({
             where: {
                 displayName: req.session.data
             }
         })
 
-        if(!user) {
+        if(!userQuery) {
             return res.status(400).json("User not found.")
         }
 
-        if(user.id != post.UserId || user.id != post.Section.UserId){
+        if(userQuery.id != postQuery.UserId && userQuery.id != postQuery.Section.UserId){
             return res.status(401).json("Request denied: unauthorized")
         }
 
@@ -960,7 +975,17 @@ app.put('/comments/', async(req, res) => {
             return res.status(400).json("Comment not found")
         }
 
-        if(comment.user.displayName != req.session.data){
+        const userQuery = await User.findOne({
+            where: {
+                displayName: req.session.data
+            }
+        })
+
+        if(!userQuery){
+            return res.status(400).json("User not found")
+        }
+
+        if(userQuery.id != commentQuery.UserId){
             return res.status(401).json("Unauthorized")
         }
     
@@ -982,7 +1007,10 @@ app.put('/comments/', async(req, res) => {
                 where: {
                     id: id
                 },
-                include: [User, {
+                include: [{
+                    model: User,
+                    attributes: ['id', 'displayName']
+                }, {
                     model: Comment,
                     as: 'Comments',
                     include: {
@@ -1000,29 +1028,43 @@ app.put('/comments/', async(req, res) => {
 })
 
 app.delete('/comments', async(req, res) => {
-    const { UserId, PostId, CommentId, sessionId } = req.body;
+    const { id, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
             return res.status(error).json("Request denied: invalid session information")
         }
-        const user = await User.findOne({
+     const commentQuery = await Comment.findOne({
             where: {
-                id: UserId
+                id: id
+            },
+            include: [User, {
+                model: Post,
+                include: Section
+            }]
+        });
+
+        if(!commentQuery){
+            return res.status(400).json("Comment not found")
+        }
+
+        const userQuery = await User.findOne({
+            where: {
+                displayName: req.session.data
             }
         })
-        if(!user){
-            return res.status(404).json("User not found!")
+
+        if(!userQuery){
+            return res.status(400).json("User not found")
         }
-        if(req.session.data != user.displayName){
-            return res.status(401).json("Please try logging in again!")
+
+        if(userQuery.id != commentQuery.UserId && userQuery.id != commentQuery.Post.Section.UserId){
+            return res.status(401).json("Request denied: unauthorized")
         }
 
         try{
             const comment = await Comment.destroy({
                 where: {
-                    UserId: UserId,
-                    PostId: PostId,
-                    CommentId: CommentId
+                    id: commentQuery.id
                 }
             });
             return res.json("Comment succesfully deleted!");

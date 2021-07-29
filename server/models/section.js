@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   Section.init({
     title: { 
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(150),
       allowNull: false,
       unique: true
     },

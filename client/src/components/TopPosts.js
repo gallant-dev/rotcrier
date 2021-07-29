@@ -26,11 +26,8 @@ function TopPosts(props){
                 const error = (data && data.message) || response.status;
                 return Promise.reject(error);
             }
-            console.log(data)
             const postArray = data.sort((a, b) => b.Shits.length - a.Shits.length)
-            console.log(postArray)
-            setPosts(data)
-            console.log(data)
+            setPosts(postArray)
         })
         .catch(error => {
             console.error('Error! ', error);
@@ -53,10 +50,8 @@ function TopPosts(props){
                posts.map((post, index) =>
                <Row>
                    <Col xs={1} sm={1} md={1} lg={1} xl={1} >
-                       <Row className="justify-content-end">
-                           <Col className="align-middle">
-                                <h6>{index+1}</h6>
-                           </Col>
+                       <Row>
+                       <h6 className="h-100 pl-75 .pt-30">{index+1}</h6>
                        </Row>
                    </Col>
                    <Col xs={11} sm={11} md={11} lg={11} xl={11}>
@@ -64,7 +59,7 @@ function TopPosts(props){
                             <Card.Body>
                                 <Row>
                                     <Col xs={2} sm={2} md={2} lg={2} xl={2}>
-                                        <Shit shitFor={{type: 'post', id: post.id.toString()}} />
+                                        <Shit shitFor={{type: 'post', id: post.id}} />
                                     </Col>
                                     <Col xs={10} sm={10} md={10} lg={9} xl={8} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
                                         <Card.Title>{

@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   Comment.init({
     body: {
-      type: DataTypes.STRING(1000),
+      type: DataTypes.STRING(2000),
       allowNull: false
     }
   }, {

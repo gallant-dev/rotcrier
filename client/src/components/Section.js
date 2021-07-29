@@ -164,7 +164,10 @@ function Section(props) {
     }
 
     const joinButtonClickHandler = async(isMember) => {
-
+        const UserId = sessionStorage.getItem('id')
+        if(!UserId){
+            return window.alert("You must be logged in to join!")
+        }
         const url = isMember ? '/users/memberships/remove/' : '/users/memberships/add/'
         console.log(section.title)
         await fetch(url, {
@@ -204,16 +207,21 @@ function Section(props) {
         })
     }
 
+    const makePostButtonHandler = () => {
+        props.onMakePost(section.title);
+        props.onFocusChange({type: 'menu', name: 'Create a new post'})
+    }
+
     return(
-    <Container>
+    <Container className="pb-3">
         <Row className="mb-3">
             <Col xs={10} sm={10} md={10} lg={9} xl={8}>
                 <h1>{section && section.title}</h1>
                 <h6 onClick={() => props.onFocusChange({type: 'user', name: moderator.displayName})}>Moderator: {moderator && moderator.displayName}</h6>
                 {!editing && <span>{section && section.description}</span>}
                 <h6>{memberships && memberships.length} Members</h6>
-                <Button onClick={event => joinButtonClickHandler(isMember)}>{!isMember ? 'Become member' : 'Cancel membership'}</Button>
-
+                <Button variant="secondary" onClick={event => joinButtonClickHandler(isMember)}>{!isMember ? 'become member' : 'cancel membership'}</Button>
+                {isMember && <Button variant="secondary" className="ms-3" onClick={event => makePostButtonHandler()}>make a post</Button>}
                 {editing && 
                 <Form onSubmit={event => submitEditHandler(event)}>
                     <Form.Group controlId="description">

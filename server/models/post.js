@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   Post.init({
     title: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(150),
       allowNull: false,
       unique: true,
     },

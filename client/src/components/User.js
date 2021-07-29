@@ -7,6 +7,10 @@ function User(props){
     const [posts, setPosts] = useState([])
     const [sections, setSections] = useState([])
     const [comments, setComments] = useState([])
+    const [shits, setShits] = useState([])
+    const [postShits, setPostShits] = useState(0)
+    const [commentShits, setCommentShits] = useState(0)
+
 
     const fetchData = async() => {
         console.log(props.viewFocus.name)
@@ -32,9 +36,14 @@ function User(props){
             }
             console.log(data)
             setUser(data)
-            setPosts(data.Posts)
+            const postArray = data.Posts.sort((a, b) => b.Shits.length - a.Shits.length)
+            setPosts(postArray)
             setSections(data.Sections)
-            setComments(data.Comments)
+            const commentArray = data.Comments.sort((a, b) => b.Shits.length - a.Shits.length)
+            setComments(commentArray)
+            setShits(data.Shits)
+            setPostShits(shitCount(data.Posts))
+            setCommentShits(shitCount(data.Comments))
         })
         .catch(error => {
             console.error('Error! ', error);
@@ -47,22 +56,43 @@ function User(props){
         fetchData();
 
     }, [props.viewFocus])
+
+    const shitCount = (userData) => {
+        let postShits = 0;
+        for(let i = 0; i < userData.length; i++){
+            const shits = userData[i].Shits.length
+            postShits += shits
+        }
+
+        return postShits;
+    }
     
     return(
         <Container>
-            <h1>{user.displayName}'s Profile</h1>
+            <Row className="pb-2">
+                <h1>{user.displayName}'s Profile</h1>
+                <span className="ps-4">{shits.length} shits given!</span>
+            </Row>
             <Row>
                 <Col xs={12} sm={12} md={12} lg={6} xl={5}>
-                    <h2>Posts</h2>
+                    <Row>
+                        <Col>
+                            <h2>Posts</h2>
+                        </Col>
+                        <Col>
+                            <span className="p-0">{postShits} shits recieved on posts</span>
+                        </Col>
+                    </Row>
+
                     {(posts.length > 0 ) ?
                         posts.map( post => 
-                            <Card key={post.id+post.title} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                            <Card key={post.id+post.title}>
                                 <Card.Body>
                                     <Row>
                                             <Col xs={2} sm={2} md={2} lg={2} xl={2}>
                                                 <Shit shitFor={{type: 'post', id: post.id}} />
                                             </Col>
-                                            <Col xs={10} sm={10} md={10} lg={9} xl={8}>
+                                            <Col xs={10} sm={10} md={10} lg={9} xl={8} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
                                                 <Card.Title>{
                                                     post.title.length > 125 ?
                                                     post.title.substring(0, 125)+'...' :
@@ -84,7 +114,14 @@ function User(props){
                         ) : "0 found"}
                 </Col>
                 <Col xs={12} sm={12} md={6} lg={6} xl={4} className="pt-2">
-                <h2>Comments</h2>
+                    <Row>
+                        <Col>
+                            <h2>Comment</h2>
+                        </Col>
+                        <Col>
+                            <span className="p-0">{commentShits} shits recieved on comments</span>
+                        </Col>
+                    </Row>
                             {(comments.length > 0 ) ?
                     comments.map( comment => 
                         <Card key={comment.id+user.displayName} onClick={event => props.onFocusChange({type: 'post', name: comment.Post.title})}>

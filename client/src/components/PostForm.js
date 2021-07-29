@@ -8,12 +8,17 @@ import { useState } from 'react'
 function PostForm(props) {
     //A default empty warning state that can be used to populate warnings displayed in response from the server.
     const [warning, setWarning] = useState('')
+    const [defaultSection, setDefaultSection] = useState('')
 
     //The submitHandler is an async function that makes a fetch request to the api, and confirms validitiy of session
     //credentials and creates a new session if authorized.
     const submitHandler = async(event) => {
         //Prevent the default page refresh on submit.
         event.preventDefault();
+        const UserId = sessionStorage.getItem('id')
+        if(!UserId){
+            return window.alert("You must be logged in to comment!")
+        }
         //Create a form object containing the elements.
         const form = event.target.elements
         await fetch('/posts', {
@@ -56,7 +61,7 @@ function PostForm(props) {
 
     //Sets the focus to "Home" on cancellation.
     const cancelHandler = () => {
-        props.onFocusChange("Home")
+        props.onFocusChange({type: 'menu', name: 'Home'})
     }
     
     return(
@@ -71,7 +76,7 @@ function PostForm(props) {
                         </Form.Group>
                         <Form.Group controlId="sectionTitle">
                             <Form.Label>Section</Form.Label>
-                            <Form.Control required type="text" placeholder="What section would you like to post in?" />
+                            <Form.Control defaultValue={props.defaultSection} required type="text" placeholder="What section would you like to post in?" />
                         </Form.Group>
 
                         <Form.Group controlId="body">

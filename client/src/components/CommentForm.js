@@ -62,7 +62,7 @@ function CommentForm(props) {
     return(
         <Form onSubmit={event => submitHandler(event)}>
             <Form.Group controlId="body">
-
+                <Form.Label>Comment</Form.Label>
                 <Form.Control required as="textarea" rows={8} placeholder="What comment would you like to make?" />
             </Form.Group>
 

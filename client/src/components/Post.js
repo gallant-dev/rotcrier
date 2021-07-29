@@ -5,6 +5,7 @@ import deleteIcon from '../images/icons8-delete-96.png'
 import CommentForm from './CommentForm'
 import Comment from './Comment'
 import Shit from './Shit'
+import parse from 'html-react-parser';
 
 function Post(props) {
     const [post, setPost] = useState({})
@@ -104,11 +105,12 @@ function Post(props) {
                 console.log(error)
                 return Promise.reject(error);
             }
-
+            setPost(data)
             setUserId(sessionStorage.getItem('id'))
             setSection(data.Section)
-            setComments(data.Comments)
-            setPost(data)
+            const postOnlyCommentArray = data.Comments.filter((value, index) => { return value.CommentId == null })
+            const commentArray = postOnlyCommentArray.sort((a, b) => b.Shits.length - a.Shits.length)
+            setComments(commentArray)     
             setCreator(data.User)
             setCommentTarget({type: 'post', id: data.id})
             console.log(data);
@@ -180,13 +182,33 @@ function Post(props) {
         console.log(comments)
     }
 
+    const Body = (props) => {
+        if(!props.body){
+            return
+        }
+            console.log(props.body)
+        const text = props.body;
+
+        const regex = /(((https?:\/\/)|(www\.))[^\s]+)/g
+        const body = text.replace(regex, (url) => {
+            let hyperlink = url
+            if(!hyperlink.match('^https?:\/\/')){
+                hyperlink = 'https://'+hyperlink
+            }
+            return '<a href="'+hyperlink+'">'+hyperlink+'</a>';
+        })
+        return (
+            <>{parse(body)}</>
+        );
+    }
+
 
 
     return(
-        <Container>
+        <Container className="pb-3">
             <Row className="justify-content-start">
                                 <Col xs={2} sm={1} md={1} lg={1} xl={1}>
-                   {post.id && <Shit shitFor={{type: 'post', id: post.id.toString()}} />}
+                   {post.id && <Shit shitFor={{type: 'post', id: post.id}} />}
                 </Col>
                 <Col>
                 <Row className="justify-content-start">
@@ -194,7 +216,7 @@ function Post(props) {
                     {section && <h2 onClick={event => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h2>}
                     <h1>{post.title}</h1>
                     <h6 onClick={() => props.onFocusChange({type: 'user', name: creator.displayName})}>created by: {creator.displayName}</h6>
-                    {!editing && <span>{post.body}</span>}
+                    {(!editing && post.body) && <Body body={post.body}></Body>}
 
                 </Col>
                 <Col xs={1} sm={1} md={1} lg={1} xl={1}>
@@ -207,7 +229,10 @@ function Post(props) {
                         alt="Edit"
                         onClick={event => editingButtonHandler(true)}
                         />
-
+                    </>
+                }
+                {(post.UserId == userId || section.UserId == userId) && 
+                    <>
                         <Image className="delete p-1"
                         width={25}
                         height={25}
@@ -219,13 +244,12 @@ function Post(props) {
                 }
                 </Col>
                 </Row>
-                <Row className="justify-content-start">
-                {(commentTarget.type === "post" && showCommentForm)  && <CommentForm post={post} onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
+                <Row className="justify-content-start pt-4">
                     {editing && 
                     <Form onSubmit={event => submitEditHandler(event)}>
                         <Form.Group controlId="body">
                             <Form.Label>Body</Form.Label>
-                            <Form.Control required as="textarea" rows={8}>{post.body}</Form.Control>
+                            <Form.Control required as="textarea" rows={8} defaultValu={post.body}></Form.Control>
                         </Form.Group>
             
                         <Form.Group controlId="formButtons">
@@ -242,21 +266,17 @@ function Post(props) {
                         </Form.Group>
                     </Form>              
                     }
+                    {(commentTarget.type === "post" && showCommentForm && !editing)  && <CommentForm post={post} onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
                 </Row>
                 
                 </Col>
-
-
-
             </Row>
             <Row className="justify-content-center">
                 <Col >
                 {(!showCommentForm || commentTarget.type != "post") && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                 </Col>
-
-
             </Row>
-            {comments.length > 0 && comments.map( comment => <Comment post={post} key={comment.id} removeFromParentArray={removeFromParentArray} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+            {comments.length > 0 && comments.map( comment => <Comment section={section} post={post} key={comment.id} removeFromParentArray={removeFromParentArray} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
         </Container>
 
     );

@@ -4,6 +4,7 @@ import CommentForm from './CommentForm'
 import Shit from './Shit'
 import editIcon from '../images/icons8-edit-48.png'
 import deleteIcon from '../images/icons8-delete-96.png'
+import parse from 'html-react-parser';
 
 function Comment(props) {
     const [userId, setUserId] = useState()
@@ -131,7 +132,8 @@ function Comment(props) {
             }
             console.log(data);
             setComment(data)
-            setComments(data.Comments)
+            const commentArray = data.Comments.sort((a, b) => b.Shits.length - a.Shits.length)
+            setComments(commentArray)
             console.log(comments);
 
         })
@@ -166,28 +168,36 @@ function Comment(props) {
         setShowCommentForm(false)
     }
 
-    const removeFromParentArray = (remove) => {
-        const index = comments.findIndex(comment => comment.id === remove.id)
-        console.log(index)
-        console.log(remove)
-        if(index > -1) {
-            let newArray = comments.splice(index, 1)
-            setComments(newArray)
+    const CommentBody = () => {
+        if(!comment.body){
+            return
         }
+        const text = comment.body;
+        console.log(text)
 
-        console.log(comments)
+        const regex = /(((https?:\/\/)|(www\.))[^\s]+)/g
+        const body = text.replace(regex, (url) => {
+            let hyperlink = url
+            if(!hyperlink.match('^https?:\/\/')){
+                hyperlink = 'https://'+hyperlink
+            }
+            return '<a href="'+hyperlink+'">'+hyperlink+'</a>';
+        })
+        return (
+            <>{parse(body)}</>
+        );
     }
 
     return (
         <>
         {showComment &&
-            <Card>
-                <Card.Header onClick={() => props.onFocusChange({type: 'user', name: comment.User.displayName})}>
+            <Card >
+                <Card.Header>
                     <Row>
-                        <Col xs={11} sm={10} md={1011} lg={11} xl={11}>
+                        <Col xs={6} sm={9} md={10} lg={10} xl={10}  onClick={() => props.onFocusChange({type: 'user', name: comment.User.displayName})}>
                             {comment.User.displayName}
                         </Col>
-                        <Col xs={1} sm={1} md={1} lg={1} xl={1}>
+                        <Col xs={6} sm={3} md={2} lg={2} xl={2}>
                             {comment.UserId == userId && 
                                 <>
                                     <Image className="edit p-1"
@@ -197,7 +207,10 @@ function Comment(props) {
                                     alt="Edit"
                                     onClick={event => editingButtonHandler(true)}
                                     />
-
+                                </>
+                            }
+                            {(props.section.UserId == userId || comment.UserId == userId) && 
+                                <>
                                     <Image className="delete p-1"
                                     width={25}
                                     height={25}
@@ -214,12 +227,12 @@ function Comment(props) {
                 </Card.Header>
                 <Card.Body className="pe-0 pb-0">
                     <Row>
-                        <Col xs={1} sm={1} md={1} lg={1} xl={1}>
+                        <Col xs={3} sm={2} md={2} lg={2} xl={2}>
                             <Shit shitFor={{type: 'comment', id: comment.id}} />
                         </Col>
-                        <Col xs={11} sm={11} md={11} lg={11} xl={11}>
+                        <Col xs={9} sm={10} md={10} lg={10} xl={10} className="pe-3">
                                 <Card.Text>
-                                {!editing && <span>{comment.body}</span>}
+                                {!editing &&  <CommentBody />}
                                 {editing && 
                                 <Form onSubmit={event => submitEditHandler(event)}>
                                     <Form.Group controlId="body">
@@ -246,7 +259,7 @@ function Comment(props) {
                             props.commentTarget.id == comment.id)) && <Button active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                             {(showCommentForm && (props.commentTarget.type == 'comment' &&
                             props.commentTarget.id == comment.id)) && <CommentForm post={props.post} onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}
-                            {comments.length > 0 && comments.map( comment => <Comment onFocusChange={props.onFocusChange} post={props.post} key={comment.id} comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+                            {comments.length > 0 && comments.map( comment => <Comment onFocusChange={props.onFocusChange} section={props.section} post={props.post} key={comment.id} comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
                         </Col>
                     </Row>
                 </Card.Body>

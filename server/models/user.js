@@ -28,12 +28,12 @@ module.exports = (sequelize, DataTypes) => {
   };
   User.init({
     displayName: { 
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       allowNull: false,
       unique: true,
     },
     email: { 
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true
     },

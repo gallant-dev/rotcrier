@@ -26,15 +26,28 @@
   }
 }
 
+.pt-30 {
+  padding-top: 30%;
+}
+
+.pl-75 {
+  padding-left: 75%;
+}
+
+
+.vh-92 {
+  height: 89vh !important;
+}
+
 .btn-primary {
   background-color: grey;
-  border-color: olive;
+  border-color: #332421;
 }
 
 .btn-primary:hover, .btn-primary:focus {
   color: #fff;
-  background-color: olive;
-  border-color: olive;
+  background-color: #332421;
+  border-color: #332421;
 }
 
 .btn-secondary {
@@ -46,8 +59,8 @@
 
 .btn-secondary:hover, .btn-secondary:focus {
   color: #fff;
-  background-color: olive;
-  border-color: olive;
+  background-color: #332421;
+  border-color: #332421;
 }
 
 .navbar-nav {

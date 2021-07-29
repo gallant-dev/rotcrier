@@ -30,7 +30,7 @@ A comment can be made on a Post or other user's comments. Comments can be edited
 Users can give a shit about the Comment and help it rise to the top.
 
 
-## Rotcrier was made using a React front end, and a Nodejs/Express back-end.
+## Rotcrier was made using a React front-end, and a Nodejs/Express back-end.
 
 ## Available Scripts
 

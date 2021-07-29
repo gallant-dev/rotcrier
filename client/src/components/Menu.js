@@ -59,7 +59,7 @@ function Menu(props) {
     }
 
     return(
-        <NavDropdown title={
+        <NavDropdown title={ props.viewFocus &&
             props.viewFocus.name.length > 25 ?
             props.viewFocus.name.substring(0, 25)+'...' :
             props.viewFocus.name
