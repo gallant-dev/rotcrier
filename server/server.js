@@ -7,6 +7,19 @@ const SessionStore = require('express-session-sequelize')(session.Store);
 var crypto = require('crypto');
 const path = require('path')
 var unzalgo = require('unzalgo');
+const http = require('http');
+const https = require('https');
+const forceSequelize = false;
+
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/rotcrier.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/rotcrier.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/rotcrier.com/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
 
 const sequelizeSessionStore = new SessionStore({
     db: sequelize,
@@ -1394,9 +1407,18 @@ app.get('/search/:paramaters', async(req, res) => {
 })
 //The above is HTTP requests for search.
 
-const port =  process.env.PORT || 3001;
-app.listen(port, async () =>{
-    console.log(`Listening on port ${port}!`)
-    await sequelize.sync({force: true}); // Use force: true if table needs to be remade.
-    console.log(`Database synced.`)
-})
+const httpReroute = express()
+httpReroute.all('*', (req, res) => res.redirect(300, 'https://rotcier.com'));
+
+const httpServer = http.createServer(httpReroute);
+const httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(80, async() => {
+    console.log(`Listening on port 80!`)
+});
+
+httpsServer.listen(443, async() => {
+    console.log(`Listening on port 443!`)
+    await sequelize.sync({force: forceSequelize}); // Use force: true if table needs to be remade.
+    console.log(`Database synced.`);
+});
