@@ -1,5 +1,5 @@
 import { Nav, Button, ButtonGroup } from 'react-bootstrap'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SignUp from './SignUp'
 import Login from './Login'
 import UserSettings from './UserSettings'
@@ -16,6 +16,13 @@ function AccountControls(props) {
         setIsLoggedIn(false);
         props.setLoggedOut()
     }
+
+    useEffect(() => {
+        if(sessionStorage.getItem('session')){
+            userLoggedIn();
+        }
+
+    }, [props.viewFocus])
 
     if(!isLoggedIn){
         return (
