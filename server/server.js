@@ -1408,7 +1408,7 @@ app.get('/search/:paramaters', async(req, res) => {
 //The above is HTTP requests for search.
 
 const httpReroute = express()
-httpReroute.all('*', (req, res) => res.redirect(300, 'https://rotcrier.com'));
+httpReroute.all('*', (req, res) => res.redirect(301, 'https://rotcrier.com'));
 
 const httpServer = http.createServer(httpReroute);
 const httpsServer = https.createServer(credentials, app);
