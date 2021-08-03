@@ -195,42 +195,42 @@ function Post(props) {
     return(
         <Container className="pb-3">
             <Row className="justify-content-start">
-                                <Col xs={2} sm={1} md={1} lg={1} xl={1}>
-                   {post.id && <Shit shitFor={{type: 'post', id: post.id}} />}
-                </Col>
                 <Col>
-                <Row className="justify-content-start">
-                <Col xs={10} sm={10} md={10} lg={9} xl={8}>
-                    {section && <h2 onClick={event => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h2>}
-                    <h1>{post.title}</h1>
-                    <h6 onClick={() => props.onFocusChange({type: 'user', name: creator.displayName})}>created by: {creator.displayName}</h6>
-                    {(!editing && post.body) && <Body body={post.body}></Body>}
+                    <Row>
+                    <Col xs={4} sm={2} md={2} lg={1} xl={1}>
+                        {post.id && <Shit shitFor={{type: 'post', id: post.id}} />}
+                    </Col>
+                    <Col xs={5} sm={10} md={10} lg={9} xl={8}>
+                        {section && <h2 onClick={event => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h2>}
+                        <h1>{post.title}</h1>
+                        <h6 onClick={() => props.onFocusChange({type: 'user', name: creator.displayName})}>created by: {creator.displayName}</h6>
+                        {(!editing && post.body) && <Body body={post.body}></Body>}
 
-                </Col>
-                <Col xs={1} sm={1} md={1} lg={1} xl={1}>
-                {post.UserId == userId && 
-                    <>
-                        <Image className="edit p-1"
-                        width={25}
-                        height={25}
-                        src={editIcon}
-                        alt="Edit"
-                        onClick={event => editingButtonHandler(true)}
-                        />
-                    </>
-                }
-                {(post.UserId == userId || section.UserId == userId) && 
-                    <>
-                        <Image className="delete p-1"
-                        width={25}
-                        height={25}
-                        src={deleteIcon}
-                        alt="Delete"
-                        onClick={event => deleteButtonHandler()}
-                        />
-                    </>
-                }
-                </Col>
+                    </Col>
+                    <Col xs={2} sm={2} md={1} lg={1} xl={1}>
+                    {post.UserId == userId && 
+                        <>
+                            <Image className="edit p-1"
+                            width={25}
+                            height={25}
+                            src={editIcon}
+                            alt="Edit"
+                            onClick={event => editingButtonHandler(true)}
+                            />
+                        </>
+                    }
+                    {(post.UserId == userId || section.UserId == userId) && 
+                        <>
+                            <Image className="delete p-1"
+                            width={25}
+                            height={25}
+                            src={deleteIcon}
+                            alt="Delete"
+                            onClick={event => deleteButtonHandler()}
+                            />
+                        </>
+                    }
+                    </Col>
                 </Row>
                 <Row className="justify-content-start pt-4">
                     {editing && 
