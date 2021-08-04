@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header';
 import Home from './components/Home'
 import TopPosts from './components/TopPosts'
@@ -12,15 +12,31 @@ import User from './components/User'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { clean } from 'unzalgo';
+import {
+  Switch,
+  Route,
+  useHistory,
+  withRouter
+} from "react-router-dom";
 
 function App() {
   const[focus, setFocus] = useState({type: "menu", name: "Home"})
   const [memberSections, setMemberSections] = useState([])
   const [search, setSearch] = useState("")
   const [defaultSection, setDefaultSection] = useState('')
+  const history = useHistory();
 
   const focusChangeHandler = (newFocus) => {
     setFocus(newFocus)
+    newFocus.name === "Home" && history.push('/')
+    newFocus.name === "Top Posts"  && history.push('/top-posts')
+    newFocus.name === "New Posts" && history.push('/new-posts')
+    newFocus.name === "Search" && history.push('/search')
+    newFocus.name === "Create a new section"  && history.push('/create-new-section')
+    newFocus.name === "Create a new post" && history.push('/create-new-post')
+    newFocus.type === "section" && history.push('/section')
+    newFocus.type === "post" && history.push('/post')
+    newFocus.type === "user" && history.push('/user')
   }
 
   const memberSectionsHandler = (sections) => {
@@ -36,24 +52,45 @@ function App() {
     setDefaultSection(section)
   }
 
+  console.log(history.location)
   return (
     <div className="App">
-      <div className="container-fluid p-0">
-        <Header onFocusChange={focusChangeHandler} onUpdateMemberSections={memberSectionsHandler} onSearch={searchHandler} memberSections={memberSections} viewFocus={focus}/>
-        <div className="vh-92 container-fluid p-2">
-        {focus.name === "Home" && <Home viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />}
-        {focus.name === "Top Posts" && <TopPosts viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />}
-        {focus.name === "New Posts" && <NewPosts viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />}
-        {focus.name === "Search" && <Search viewFocus={focus} onFocusChange={focusChangeHandler} search={search} />}
-        {focus.name === "Create a new section" && <SectionForm onFocusChange={focusChangeHandler} />}
-        {focus.name === "Create a new post" && <PostForm defaultSection={defaultSection} onFocusChange={focusChangeHandler} />}
-        {focus.type === "section" && <Section viewFocus={focus} onMakePost={defaultSectionHandler} onFocusChange={focusChangeHandler}/>}
-        {focus.type === "post" && <Post viewFocus={focus} onFocusChange={focusChangeHandler}/>}
-        {focus.type === "user" && <User viewFocus={focus} onFocusChange={focusChangeHandler} />}
+        <div className="container-fluid p-0">
+          <Header onFocusChange={focusChangeHandler} onUpdateMemberSections={memberSectionsHandler} onSearch={searchHandler} memberSections={memberSections} viewFocus={focus}/>
+          <div className="vh-92 container-fluid p-2">
+            <Switch>
+              <Route exact path="/"> 
+                <Home viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
+              </Route>
+              <Route path="/top-posts">
+                <TopPosts viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
+              </Route>
+              <Route path="/new-posts">
+                <NewPosts viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
+              </Route>
+              <Route path="/search">
+                <Search viewFocus={focus} onFocusChange={focusChangeHandler} search={search} />
+              </Route>
+              <Route path="/create-new-section">
+                <SectionForm onFocusChange={focusChangeHandler} />
+              </Route>
+              <Route path="/create-new-post">
+                <PostForm defaultSection={defaultSection} onFocusChange={focusChangeHandler} />
+              </Route>
+              <Route path="/section">
+                <Section viewFocus={focus} onMakePost={defaultSectionHandler} onFocusChange={focusChangeHandler}/>
+              </Route>
+              <Route path="/post">
+                <Post viewFocus={focus} onFocusChange={focusChangeHandler}/>
+              </Route>
+              <Route path="/user">
+                <User viewFocus={focus} onFocusChange={focusChangeHandler} />
+              </Route>
+            </Switch>
+          </div>
         </div>
-      </div>
     </div>
   );
 }
 
-export default App;
+export default withRouter(App);
