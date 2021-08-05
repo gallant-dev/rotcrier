@@ -98,9 +98,8 @@ function Post(props) {
             const data = isJson && await response.json();
             
 
-            // check for error response
+            // If the response is not okay return the error message.
             if (!response.ok) {
-                // get error message from body or default to response status 
                 const error = (data && data.message) || response.status;
                 console.log(error)
                 return Promise.reject(error);
@@ -186,87 +185,100 @@ function Post(props) {
             return '<a href="'+hyperlink+'">'+hyperlink+'</a>';
         })
         return (
-            <>{parse(body)}</>
+            <div className="pb-4 text-break">{parse(body)}</div>
         );
     }
 
-
-
     return(
         <Container className="pb-3">
-            <Row className="justify-content-start">
+            <Row>
                 <Col>
                     <Row>
-                    <Col xs={4} sm={2} md={2} lg={1} xl={1}>
-                        {post.id && <Shit shitFor={{type: 'post', id: post.id}} />}
-                    </Col>
-                    <Col xs={5} sm={10} md={10} lg={9} xl={8}>
-                        {section && <h2 onClick={event => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h2>}
-                        <h1>{post.title}</h1>
-                        <h6 onClick={() => props.onFocusChange({type: 'user', name: creator.displayName})}>created by: {creator.displayName}</h6>
-                        {(!editing && post.body) && <Body body={post.body}></Body>}
-
-                    </Col>
-                    <Col xs={2} sm={2} md={1} lg={1} xl={1}>
-                    {post.UserId == userId && 
-                        <>
-                            <Image className="edit p-1"
-                            width={25}
-                            height={25}
-                            src={editIcon}
-                            alt="Edit"
-                            onClick={event => editingButtonHandler(true)}
-                            />
-                        </>
-                    }
-                    {(post.UserId == userId || section.UserId == userId) && 
-                        <>
-                            <Image className="delete p-1"
-                            width={25}
-                            height={25}
-                            src={deleteIcon}
-                            alt="Delete"
-                            onClick={event => deleteButtonHandler()}
-                            />
-                        </>
-                    }
-                    </Col>
-                </Row>
-                <Row className="justify-content-start pt-4">
-                    {editing && 
-                    <Form onSubmit={event => submitEditHandler(event)}>
-                        <Form.Group controlId="body">
-                            <Form.Label>Body</Form.Label>
-                            <Form.Control required as="textarea" rows={8} defaultValue={post.body}></Form.Control>
-                        </Form.Group>
-            
-                        <Form.Group controlId="formButtons">
-                            <Button variant="primary" className="m-2" onClick={event => editingButtonHandler(false)}>
-                                Cancel
-                            </Button>
-            
-                            <Button variant="primary" className="m-2" type="submit">
-                                Submit
-                            </Button>
-                            <Form.Label style={{color: "red"}}>
-                                {warning}
-                            </Form.Label>
-                        </Form.Group>
-                    </Form>              
-                    }
-                    {(commentTarget.type === "post" && showCommentForm && !editing)  && <CommentForm post={post} onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
-                </Row>
+                        <Col xs={3} sm={2} md={2} lg={1} xl={1}>
+                            <Row>
+                                {post.id && <Shit shitFor={{type: 'post', id: post.id}} />}
+                            </Row>
+                        </Col>
+                        <Col xs={9} sm={10} md={10} lg={11} xl={11}>
+                            <Row>
+                                {section && <h4 className="pb-2 text-break" onClick={event => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h4>}
+                            </Row>
+                            <h1 className="pb-2">{post.title}</h1>
+                            <Row className="pb-3 justify-content-between">
+                                <Col xs={12} sm={7} md={7} lg={7} xl={7} xxl={7}>
+                                    <h6 className="text-break" onClick={() => props.onFocusChange({type: 'user', name: creator.displayName})}>creator: {creator.displayName}</h6>
+                                </Col>
+                                <Col xs={12} sm={2} md={2} lg={2} xl={2} xxl={1}>
+                                    {post.UserId == userId && 
+                                        <>
+                                            <Image className="edit p-1"
+                                            width={25}
+                                            height={25}
+                                            src={editIcon}
+                                            alt="Edit"
+                                            onClick={event => editingButtonHandler(true)}
+                                            />
+                                        </>
+                                    }
+                                    {(post.UserId == userId || section.UserId == userId) && 
+                                        <>
+                                            <Image className="delete p-1"
+                                            width={25}
+                                            height={25}
+                                            src={deleteIcon}
+                                            alt="Delete"
+                                            onClick={event => deleteButtonHandler()}
+                                            />
+                                        </>
+                                    }
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col xs={9} sm={10} md={10} lg={11} xl={11}>
+                                    {(!editing && post.body) && <Body body={post.body}></Body>}
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    <Row className="justify-content-center pt-4">
+                        {editing && 
+                        <Form onSubmit={event => submitEditHandler(event)}>
+                            <Form.Group controlId="body">
+                                <Form.Label>Body</Form.Label>
+                                <Form.Control required as="textarea" rows={8} defaultValue={post.body}></Form.Control>
+                            </Form.Group>
                 
+                            <Form.Group controlId="formButtons">
+                                <Button variant="primary" className="m-2" onClick={event => editingButtonHandler(false)}>
+                                    Cancel
+                                </Button>
+                
+                                <Button variant="primary" className="m-2" type="submit">
+                                    Submit
+                                </Button>
+                                <Form.Label style={{color: "red"}}>
+                                    {warning}
+                                </Form.Label>
+                            </Form.Group>
+                        </Form>              
+                        }
+                        <Col xs={12} sm={11} md={11} lg={11} xl={10} xxl={10}>
+                            {(commentTarget.type === "post" && showCommentForm && !editing)  && <CommentForm post={post} onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
+                            <Row className="pb-4">
+                                <Col >
+                                {(!showCommentForm || commentTarget.type != "post") && <Button className="mb-3" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
+                                </Col>
+                            </Row>
+                            <Row className="p-2">
+                                <hr />
+                                <h6>Comments:</h6>
+                                {comments.length > 0 && comments.map( comment => <Comment section={section} post={post} key={comment.id} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
+                            </Row>
+                        </Col>
+                    </Row>             
                 </Col>
             </Row>
-            <Row className="justify-content-center">
-                <Col >
-                {(!showCommentForm || commentTarget.type != "post") && <Button className="mb-3" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
-                </Col>
-            </Row>
-            {comments.length > 0 && comments.map( comment => <Comment section={section} post={post} key={comment.id} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
         </Container>
-
     );
 }
 

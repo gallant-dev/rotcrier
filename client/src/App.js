@@ -57,7 +57,7 @@ function App() {
     <div className="App">
         <div className="container-fluid p-0">
           <Header onFocusChange={focusChangeHandler} onUpdateMemberSections={memberSectionsHandler} onSearch={searchHandler} memberSections={memberSections} viewFocus={focus}/>
-          <div className="vh-92 container-fluid p-2">
+          <div className="container-fluid p-2">
             <Switch>
               <Route exact path="/"> 
                 <Home viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />

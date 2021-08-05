@@ -26,18 +26,11 @@
   }
 }
 
-.pt-30 {
-  padding-top: 30%;
+.max-25px {
+  max-width: 25px;
+  max-height: 25px;
 }
 
-.pl-75 {
-  padding-left: 75%;
-}
-
-
-.vh-92 {
-  height: 89vh !important;
-}
 
 .btn-primary {
   background-color: grey;

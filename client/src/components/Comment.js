@@ -191,13 +191,13 @@ function Comment(props) {
     return (
         <>
         {showComment &&
-            <Card >
+            <Card className="p-0">
                 <Card.Header>
-                    <Row>
-                        <Col xs={6} sm={9} md={10} lg={10} xl={10}  onClick={() => props.onFocusChange({type: 'user', name: comment.User.displayName})}>
+                    <Row className="justify-content-between">
+                        <Col xs={12} sm={7} md={8} lg={8} xl={8}  onClick={() => props.onFocusChange({type: 'user', name: comment.User.displayName})}>
                             {comment.User.displayName}
                         </Col>
-                        <Col xs={6} sm={3} md={2} lg={2} xl={2}>
+                        <Col xs={12} sm={3} md={2} lg={2} xl={2}>
                             {comment.UserId == userId && 
                                 <>
                                     <Image className="edit p-1"
@@ -221,18 +221,16 @@ function Comment(props) {
                                 </>
                             }
                         </Col>
-                    </Row>
-
-                
+                    </Row>              
                 </Card.Header>
-                <Card.Body className="pe-0 pb-0">
+                <Card.Body className="ps-1 pe-0 pb-0">
                     <Row>
                         <Col xs={3} sm={2} md={2} lg={2} xl={2}>
                             <Shit shitFor={{type: 'comment', id: comment.id}} />
                         </Col>
                         <Col xs={9} sm={10} md={10} lg={10} xl={10} className="pe-3">
                                 <Card.Text>
-                                {!editing &&  <CommentBody />}
+                                {!editing && <CommentBody />}
                                 {editing && 
                                 <Form onSubmit={event => submitEditHandler(event)}>
                                     <Form.Group controlId="body">
@@ -255,7 +253,12 @@ function Comment(props) {
                                 </Form>              
                                 }
                             </Card.Text>
-                            {(!showCommentForm || !(props.commentTarget.type == 'comment' &&
+
+                        </Col>
+                    </Row>
+                    <Row className="mt-3">
+                        <Col>
+                        {(!showCommentForm || !(props.commentTarget.type == 'comment' &&
                             props.commentTarget.id == comment.id)) && <Button className="mb-3" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                             {(showCommentForm && (props.commentTarget.type == 'comment' &&
                             props.commentTarget.id == comment.id)) && <CommentForm post={props.post} onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}

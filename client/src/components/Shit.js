@@ -144,15 +144,18 @@ function Shit(props){
       
 
     return(
-        <OverlayTrigger
-        placement="right"
-        delay={{ show: 250, hide: 400 }}
-        overlay={renderTooltip(shitGiven)}>
-            <div className="text-center">
-                {<h6>{shits.length}</h6>}
-                <Image onClick={() => clickShitHandler()} width={35} height={35} src={shitGiven ? shitIcon : noShitIcon} />
-            </div>
-        </OverlayTrigger>
+        <>
+            {<h6 className="mb-1 p-0 text-center">{shits.length}</h6>}
+            <OverlayTrigger
+            placement="right"
+            delay={{ show: 250, hide: 400 }}
+            overlay={renderTooltip(shitGiven)}>
+                <div className="text-center">
+                    <Image className="ps-1 max-25px" onClick={() => clickShitHandler()} fluid src={shitGiven ? shitIcon : noShitIcon} />
+                </div>
+            </OverlayTrigger>
+        </>
+
     );
 }
 
