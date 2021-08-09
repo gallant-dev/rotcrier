@@ -12,24 +12,23 @@ function Post(props) {
     const [creator, setCreator] = useState({})
     const [section, setSection] = useState({})
     const [comments, setComments] = useState([])
-    const [userId, setUserId] = useState()
     const [commentTarget, setCommentTarget] = useState({type: 'post', id: null})
     const [showCommentForm, setShowCommentForm] = useState(true)
     const [editing, setEditing] = useState(false)
     const [warning, setWarning] = useState('')
-
+    
     const commentTargetHandler = (value) => {
         setCommentTarget({type: 'comment', id: value})
     }
 
     const commentSubmitHandler = () => {
-        fetchData()
+        fetchPost()
         setShowCommentForm(false)
     }
 
     const commentButtonHandler = (value) => {
-        if(showCommentForm && !(commentTarget.type == 'post' &&
-        commentTarget.id == post.id)){
+        if(showCommentForm && !(commentTarget.type === 'post' &&
+        commentTarget.id === post.id)){
             setCommentTarget({type: 'post', id: post.id})
         }
         else{
@@ -73,9 +72,7 @@ function Post(props) {
             }
             //Call the function in the parent to set behaviour after form submission, set the warning and log
             //the data to the console.
-
             props.onFocusChange({type: "menu", name: "Home"})
-            console.log(data);
         })
         .catch(error => {
             console.error('Error! ', error);
@@ -83,7 +80,7 @@ function Post(props) {
     }
 
 
-    const fetchData = async() => {
+    const fetchPost = async() => {
         const url = '/posts/'+encodeURIComponent(props.viewFocus.name)
         await fetch(url, {
             method: 'GET',
@@ -105,14 +102,12 @@ function Post(props) {
                 return Promise.reject(error);
             }
             setPost(data)
-            setUserId(sessionStorage.getItem('id'))
+            setCreator(data.User)
             setSection(data.Section)
             const postOnlyCommentArray = data.Comments.filter((value, index) => { return value.CommentId == null })
             const commentArray = postOnlyCommentArray.sort((a, b) => b.Shits.length - a.Shits.length)
             setComments(commentArray)     
-            setCreator(data.User)
             setCommentTarget({type: 'post', id: data.id})
-            console.log(data);
         })
         .catch(error => {
             console.error('Error! ', error);
@@ -120,7 +115,7 @@ function Post(props) {
     }
 
     useEffect(() => {
-        fetchData();
+        fetchPost()
 
     }, [props.viewFocus])
 
@@ -162,7 +157,6 @@ function Post(props) {
             setEditing(false)
             setPost(data)
             setWarning("")
-            console.log(data);
         })
         .catch(error => {
             console.error('Error! ', error);
@@ -173,7 +167,7 @@ function Post(props) {
         if(!props.body){
             return
         }
-            console.log(props.body)
+
         const text = props.body;
 
         const regex = /(((https?:\/\/)|(www\.))[^\s]+)/g
@@ -206,10 +200,10 @@ function Post(props) {
                             <h1 className="pb-2">{post.title}</h1>
                             <Row className="pb-3 justify-content-between">
                                 <Col xs={12} sm={7} md={7} lg={7} xl={7} xxl={7}>
-                                    <h6 className="text-break" onClick={() => props.onFocusChange({type: 'user', name: creator.displayName})}>creator: {creator.displayName}</h6>
+                                    {creator && <h6 className="text-break" onClick={() => props.onFocusChange({type: 'user', name: creator.displayName})}>creator: {creator.displayName}</h6>}
                                 </Col>
                                 <Col xs={12} sm={2} md={2} lg={2} xl={2} xxl={1}>
-                                    {post.UserId == userId && 
+                                    {post.UserId === props.userId && 
                                         <>
                                             <Image className="edit p-1"
                                             width={25}
@@ -220,7 +214,7 @@ function Post(props) {
                                             />
                                         </>
                                     }
-                                    {(post.UserId == userId || section.UserId == userId) && 
+                                    {(post.UserId === props.userId || section.UserId === props.userId) && 
                                         <>
                                             <Image className="delete p-1"
                                             width={25}
@@ -266,7 +260,7 @@ function Post(props) {
                             {(commentTarget.type === "post" && showCommentForm && !editing)  && <CommentForm post={post} onCommentSubmit={commentSubmitHandler} commentTarget={commentTarget}/>}
                             <Row className="pb-4">
                                 <Col >
-                                {(!showCommentForm || commentTarget.type != "post") && <Button className="mb-3" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
+                                {(!showCommentForm || commentTarget.type !== "post") && <Button className="mb-3" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
                                 </Col>
                             </Row>
                             <Row className="p-2">

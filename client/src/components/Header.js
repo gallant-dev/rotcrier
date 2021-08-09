@@ -4,18 +4,18 @@ import AccountControls from './AccountControls'
 import Menu from './Menu'
 
 function Header(props) {
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const isLoggedIn = props.isLoggedIn
 
     const focusHandler = (value) => {
         props.onFocusChange(value)
     }
 
     const loginHandler = () => {
-        setIsLoggedIn(true)
+        props.onLogin(true)
     }
 
     const logoutHandler  = () => {
-        setIsLoggedIn(false)
+        props.onLogin(false)
         focusHandler({type: 'menu', name: 'Home'})
         sessionStorage.clear()
     }
@@ -37,7 +37,7 @@ function Header(props) {
                 <Menu isLoggedIn={isLoggedIn} onUpdateMemberSections={props.onUpdateMemberSections} onFocusChange={focusHandler} memberSections={props.memberSections} viewFocus={props.viewFocus} />
             </Nav>
             <Nav>
-                <AccountControls onChangeFocus={focusHandler} setLoggedIn={loginHandler} setLoggedOut={logoutHandler}/>
+                <AccountControls isLoggedIn={isLoggedIn} onChangeFocus={focusHandler} onLogin={props.onLogin} onLogout={props.onLogout}/>
             </Nav>
         </Navbar.Collapse>
         <Nav>

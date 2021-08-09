@@ -10,12 +10,11 @@ function Section(props) {
     const [moderator, setModerator] = useState({})
     const [isMember, setIsMember] = useState(false)
     const [posts, setPosts] = useState([])
-    const [userId, setUserId] = useState()
     const [editing, setEditing] = useState(false)
     const [warning, setWarning] = useState('')
+    const userId = props.userId;
 
-
-    const fetchData = async() => {
+    const fetchSection = async() => {
         console.log(props.viewFocus.name)
         await fetch('/sections/'+props.viewFocus.name, {
             method: 'GET',
@@ -40,12 +39,11 @@ function Section(props) {
             console.log(data)
 
             setSection(data)
+            const postArray = data.Posts.sort((a, b) => b.Shits.length - a.Shits.length)
+            setPosts(postArray)
             setMemberships(data.members)
             setModerator(data.members[0])
-            setPosts(data.Posts)
-            setUserId(sessionStorage.getItem('id'))
             const membership = membershipCheck(data.members, sessionStorage.getItem('id'))
-            console.log(membership)
             setIsMember(membership)
 
         })
@@ -57,7 +55,7 @@ function Section(props) {
 
 
     useEffect(() => {  
-        fetchData();
+        fetchSection()
 
     }, [props.viewFocus])
 
@@ -97,7 +95,8 @@ function Section(props) {
             setEditing(false)
             setSection(data)
             setMemberships(section.members)
-            setPosts(section.Posts)
+            const postArray = section.Posts.sort((a, b) => b.Shits.length - a.Shits.length)
+            setPosts(postArray)
             setWarning("")
             console.log(data);
         })
@@ -152,23 +151,20 @@ function Section(props) {
 
     const membershipCheck = (members, id) => {
         let membership = false
-        console.log(members)
         for(let i = 0; i < members.length; i++){
             if(members[i].id == id){
                 membership = true
             }
         }
 
-        console.log(members, id, membership)
         return membership;
     }
 
     const joinButtonClickHandler = async(isMember) => {
-        const UserId = sessionStorage.getItem('id')
-        if(!UserId){
+        if(!userId){
             return window.alert("You must be logged in to join!")
         }
-        if(section.UserId == UserId){
+        if(section.UserId == userId){
             return window.alert("You are the moderator you can't abandon your section!")
         }
         const url = isMember ? '/users/memberships/remove/' : '/users/memberships/add/'
@@ -201,9 +197,8 @@ function Section(props) {
             //Call the function in the parent to set behaviour after form submission, set the warning and log
             //the data to the console.
             setIsMember(!isMember)
-            fetchData()
+            fetchSection()
             props.onFocusChange({type: "section", name: section.title})
-            console.log(data)
         })
         .catch(error => {
             console.error('Error! ', error);
@@ -272,7 +267,7 @@ function Section(props) {
         <Container>
             {(posts.length > 0 ) &&
             posts.map( post => 
-                <Card key={post.id+post.title} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                <Card key={post.id+post.title} onClick={() => props.onFocusChange({type: 'post', name: post.title})}>
                     <Card.Body>
                         <Row>
                             <Col xs={1} sm={1} md={1} lg={1} xl={1}>

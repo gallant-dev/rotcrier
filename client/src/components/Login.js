@@ -42,7 +42,7 @@ function Login(props) {
             sessionStorage.setItem('id', data.id)
             sessionStorage.setItem('displayName', data.displayName)
             sessionStorage.setItem('session', data.session)
-            props.onLogin();
+            props.onLogin(data.id);
             console.log(data);
         })
         .catch(error => {

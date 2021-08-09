@@ -20,10 +20,12 @@ import {
 } from "react-router-dom";
 
 function App() {
-  const[focus, setFocus] = useState({type: "menu", name: "Home"})
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [focus, setFocus] = useState({type: "menu", name: "Home"})
   const [memberSections, setMemberSections] = useState([])
   const [search, setSearch] = useState("")
   const [defaultSection, setDefaultSection] = useState('')
+  const [userId, setUserId] = useState()
   const history = useHistory();
 
   const focusChangeHandler = (newFocus) => {
@@ -52,11 +54,22 @@ function App() {
     setDefaultSection(section)
   }
 
+  const loginHandler = (id) => {
+    setIsLoggedIn(true)
+    setUserId(id)
+  }
+
+  const logoutHandler = () => {
+    setIsLoggedIn(false)
+    setUserId(null)
+    sessionStorage.clear()
+  }
+
   console.log(history.location)
   return (
     <div className="App">
         <div className="container-fluid p-0">
-          <Header onFocusChange={focusChangeHandler} onUpdateMemberSections={memberSectionsHandler} onSearch={searchHandler} memberSections={memberSections} viewFocus={focus}/>
+          <Header memberSections={memberSections} viewFocus={focus} isLoggedIn={isLoggedIn} onLogin={loginHandler} onLogout={logoutHandler} onFocusChange={focusChangeHandler} onUpdateMemberSections={memberSectionsHandler} onSearch={searchHandler} />
           <div className="container-fluid p-2">
             <Switch>
               <Route exact path="/"> 
@@ -78,13 +91,13 @@ function App() {
                 <PostForm defaultSection={defaultSection} onFocusChange={focusChangeHandler} />
               </Route>
               <Route path="/section">
-                <Section viewFocus={focus} onMakePost={defaultSectionHandler} onFocusChange={focusChangeHandler}/>
+                <Section viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onMakePost={defaultSectionHandler} onFocusChange={focusChangeHandler}/>
               </Route>
               <Route path="/post">
-                <Post viewFocus={focus} onFocusChange={focusChangeHandler}/>
+                <Post viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onFocusChange={focusChangeHandler}/>
               </Route>
               <Route path="/user">
-                <User viewFocus={focus} onFocusChange={focusChangeHandler} />
+                <User viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onFocusChange={focusChangeHandler} />
               </Route>
             </Switch>
           </div>

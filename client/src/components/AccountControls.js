@@ -1,39 +1,25 @@
-import { Nav, Button, ButtonGroup } from 'react-bootstrap'
-import { useState, useEffect } from 'react'
+import { ButtonGroup } from 'react-bootstrap'
 import SignUp from './SignUp'
 import Login from './Login'
 import UserSettings from './UserSettings'
 
 function AccountControls(props) {
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-    const userLoggedIn = () => {
-        setIsLoggedIn(true);
-        props.setLoggedIn()
-    }
+    const isLoggedIn = props.isLoggedIn;
 
     const userLoggedout = () => {
-        setIsLoggedIn(false);
         props.setLoggedOut()
     }
-
-    useEffect(() => {
-        if(sessionStorage.getItem('session')){
-            userLoggedIn();
-        }
-
-    }, [props.viewFocus])
 
     if(!isLoggedIn){
         return (
             <ButtonGroup>
-                <Login onLogin={userLoggedIn}/>
-                <SignUp onLogin={userLoggedIn}/>
+                <Login onLogin={props.onLogin}/>
+                <SignUp onLogin={props.onLogout}/>
             </ButtonGroup>
         );
     }
     return (
-        <UserSettings onChangeFocus={props.onChangeFocus} onLogout={userLoggedout}/>
+        <UserSettings onChangeFocus={props.onChangeFocus} onLogout={props.onLogout}/>
     );
 }
 

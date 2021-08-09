@@ -92,7 +92,7 @@ function User(props){
                                             <Col xs={2} sm={2} md={2} lg={2} xl={2}>
                                                 <Shit shitFor={{type: 'post', id: post.id}} />
                                             </Col>
-                                            <Col xs={10} sm={10} md={10} lg={9} xl={8} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                                            <Col xs={10} sm={10} md={10} lg={9} xl={8} onClick={() => props.onFocusChange({type: 'post', name: post.title})}>
                                                 <Card.Title>{
                                                     post.title.length > 125 ?
                                                     post.title.substring(0, 125)+'...' :
@@ -124,7 +124,7 @@ function User(props){
                     </Row>
                             {(comments.length > 0 ) ?
                     comments.map( comment => 
-                        <Card key={comment.id+user.displayName} onClick={event => props.onFocusChange({type: 'post', name: comment.Post.title})}>
+                        <Card key={comment.id+user.displayName} onClick={() => props.onFocusChange({type: 'post', name: comment.Post.title})}>
                             <Card.Body>
                                 <Row>
                                     <Col xs={2} sm={2} md={2} lg={2} xl={2}>
@@ -160,7 +160,7 @@ function User(props){
                     <h2>Sections</h2>
                     {(sections.length > 0 ) ?
                 sections.map( section => 
-                <Card key={section.id+section.title} onClick={event => props.onFocusChange({type: 'section', name: section.title})}>
+                <Card key={section.id+section.title} onClick={() => props.onFocusChange({type: 'section', name: section.title})}>
                     <Card.Body>
                         <Card.Title>{
                             section.title.length > 125 ?
