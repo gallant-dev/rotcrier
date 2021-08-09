@@ -44,8 +44,6 @@ function NewPosts(props){
     
 
     return(
-        <>
-
         <Container>
         <h2>New Posts</h2>
             {(posts.length > 0) &&
@@ -54,10 +52,10 @@ function NewPosts(props){
                     <Card key={post.id+post.title}>
                     <Card.Body>
                         <Row>
-                            <Col sm={1}>
+                            <Col xs={2} sm={2} md={1} lg={1} xl={1} className="p-0">
                                 <Shit shitFor={{type: 'post', id: post.id.toString()}} />
                             </Col>
-                            <Col onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                            <Col xs={10} sm={10} md={11} lg={11} xl={11} onClick={() => props.onFocusChange({type: 'post', name: post.title})}>
                                 <Card.Title>{
                                 post.title.length > 125 ?
                                 post.title.substring(0, 125)+'...' :
@@ -78,7 +76,6 @@ function NewPosts(props){
                 )
             }
         </Container>
-        </>
     );
 }
 

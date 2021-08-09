@@ -48,20 +48,18 @@ function TopPosts(props){
         <h2>Top Posts</h2>
             {(posts.length > 0) &&          
                posts.map((post, index) =>
-               <Row>
+               <Row className="row align-items-center">
                    <Col xs={1} sm={1} md={1} lg={1} xl={1} >
-                       <Row>
-                       <h6 className="h-100 pl-75 .pt-30">{index+1}</h6>
-                       </Row>
+                        <h6 className=" float-end">{index+1}</h6>
                    </Col>
                    <Col xs={11} sm={11} md={11} lg={11} xl={11}>
                         <Card key={post.id+post.title}>
                             <Card.Body>
                                 <Row>
-                                    <Col xs={2} sm={2} md={2} lg={2} xl={2}>
+                                    <Col xs={2} sm={2} md={1} lg={1} xl={1} className="p-0">
                                         <Shit shitFor={{type: 'post', id: post.id}} />
                                     </Col>
-                                    <Col xs={10} sm={10} md={10} lg={9} xl={8} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                                    <Col xs={10} sm={10} md={11} lg={11} xl={11} onClick={() => props.onFocusChange({type: 'post', name: post.title})}>
                                         <Card.Title>{
                                         post.title.length > 125 ?
                                         post.title.substring(0, 125)+'...' :

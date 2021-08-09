@@ -97,8 +97,6 @@ function Home(props){
     }
 
     return(
-        <>
-
         <Container>
         <h2>Recent Updates</h2>
             {(posts.length > 0) &&
@@ -106,10 +104,10 @@ function Home(props){
                 <Card key={post.id+post.title}>
                 <Card.Body>
                     <Row>
-                        <Col xs={4} sm={2} md={2} lg={2} xl={2}>
+                        <Col xs={2} sm={2} md={1} lg={1} xl={1} className="p-0">
                             <Shit shitFor={{type: 'post', id: post.id.toString()}} />
                         </Col>
-                        <Col xs={8} sm={10} md={10} lg={9} xl={8} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                        <Col xs={10} sm={10} md={11} lg={11} xl={11} onClick={() => props.onFocusChange({type: 'post', name: post.title})}>
                             <Card.Title>{
                             post.title.length > 125 ?
                             post.title.substring(0, 125)+'...' :
@@ -130,7 +128,6 @@ function Home(props){
                 )
             }
         </Container>
-        </>
     );
 }
 
