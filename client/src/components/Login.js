@@ -39,11 +39,11 @@ function Login(props) {
                 setWarning(data);
                 return Promise.reject(error);
             }
+            console.log(data);
             sessionStorage.setItem('id', data.id)
             sessionStorage.setItem('displayName', data.displayName)
             sessionStorage.setItem('session', data.session)
             props.onLogin(data.id);
-            console.log(data);
         })
         .catch(error => {
             console.error('Error! ', error);
