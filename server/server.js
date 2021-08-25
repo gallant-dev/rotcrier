@@ -39,12 +39,10 @@ app.use([
         saveUninitialized: true,
         cookie: { secure: 'auto' }
     }),
-    express.static(path.join(__dirname, 'build'))
+    '/static', express.static(path.join(__dirname, 'build//static'))
 ]);
 
-app.get('/', async(req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'))
-})
+
 
 //The following is HTTP requests for User data.
 app.post('/users', async(req, res) => {
@@ -1406,6 +1404,11 @@ app.get('/search/:paramaters', async(req, res) => {
     }
 })
 //The above is HTTP requests for search.
+
+
+app.get('*', async(req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'))
+})
 
 const httpReroute = express()
 httpReroute.all('*', (req, res) => res.redirect(301, 'https://rotcrier.com'));
