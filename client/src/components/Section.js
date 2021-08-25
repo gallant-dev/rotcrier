@@ -16,7 +16,7 @@ function Section(props) {
 
     const fetchSection = async() => {
         console.log(props.viewFocus.name)
-        await fetch('/sections/'+props.viewFocus.name, {
+        await fetch('/api/sections/'+props.viewFocus.name, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -64,7 +64,7 @@ function Section(props) {
         event.preventDefault();
         //Create a form object containing the elements.
         const form = event.target.elements
-        await fetch('/sections', {
+        await fetch('/api/sections', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -114,7 +114,7 @@ function Section(props) {
             return
         }
 
-        await fetch('/sections', {
+        await fetch('/api/sections', {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',

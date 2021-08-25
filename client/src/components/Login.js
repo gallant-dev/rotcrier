@@ -15,7 +15,7 @@ function Login(props) {
     const submitHandler = async(event) => {
         event.preventDefault();
         const form = event.target.elements
-        await fetch('/users/login', {
+        await fetch('/api/users/login', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

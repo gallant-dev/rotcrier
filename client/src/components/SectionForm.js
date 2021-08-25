@@ -17,7 +17,7 @@ function SectionForm(props) {
         //Create a form object containing the elements.
         const form = event.target.elements
 
-        await fetch('/sections', {
+        await fetch('/api/sections', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

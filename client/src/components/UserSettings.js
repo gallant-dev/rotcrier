@@ -3,7 +3,7 @@ import { NavDropdown } from 'react-bootstrap'
 function UserSettings(props) {
     let displayName = sessionStorage.getItem("displayName")
     const logout = async() => {
-        await fetch('/users/logout', {
+        await fetch('/api/users/logout', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

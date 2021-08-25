@@ -17,7 +17,7 @@ function Menu(props) {
         if(props.isLoggedIn){
             const displayName = sessionStorage.getItem('displayName')
             const fetchData = async() => {
-                await fetch('/sections/'+displayName+'/memberships', {
+                await fetch('/api/sections/'+displayName+'/memberships', {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',

@@ -9,7 +9,7 @@ function Shit(props){
     const[shitGiven, setShitGiven] = useState(false)
 
     const fetchData = async() => {
-        const url = '/shits/'+shitFor.type+'/'+shitFor.id
+        const url = '/api/shits/'+shitFor.type+'/'+shitFor.id
         await fetch(url, {
             method: 'GET',
             headers: {
@@ -59,7 +59,7 @@ function Shit(props){
             return window.alert("You must be logged in to give a shit!")
         }
         if(!shitGiven){
-            await fetch('/shits', {
+            await fetch('/api/shits', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -98,7 +98,7 @@ function Shit(props){
             })
         }
         else{
-            await fetch('/shits', {
+            await fetch('/api/shits', {
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',

@@ -9,7 +9,7 @@ function Home(props){
     const fetchData = async(displayName) => {
         console.log(displayName)
         if(displayName != null){
-            await fetch('/users/'+displayName+'/memberships/posts/0/25', {
+            await fetch('/api/users/'+displayName+'/memberships/posts/0/25', {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',

@@ -7,7 +7,7 @@ function NewPosts(props){
     const [posts, setPosts] = useState([])
 
     const fetchData = async() => {
-        await fetch('/posts/unauth/0/25', {
+        await fetch('/api/posts/unauth/0/25', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

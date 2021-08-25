@@ -20,7 +20,7 @@ function CommentForm(props) {
         const PostId = props.post.id
         const CommentId = props.commentTarget.type == 'comment' ? props.commentTarget.id : null
 
-        await fetch('/comments', {
+        await fetch('/api/comments', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

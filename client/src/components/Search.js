@@ -12,7 +12,7 @@ function Search(props){
 
     useEffect(() => {
         const fetchData = async() => {
-            const url = '/search/'+encodeURIComponent(props.search)
+            const url = '/api/search/'+encodeURIComponent(props.search)
             await fetch(url, {
                 method: 'GET',
                 headers: {

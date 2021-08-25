@@ -14,7 +14,7 @@ function User(props){
 
     const fetchData = async() => {
         console.log(props.viewFocus.name)
-        await fetch('/users/'+props.viewFocus.name, {
+        await fetch('/api/users/'+props.viewFocus.name, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
