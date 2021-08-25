@@ -41,7 +41,7 @@ function Home(props){
 
         }
         else {
-            await fetch('/posts/unauth/0/25', {
+            await fetch('/api/posts/unauth/0/25', {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
