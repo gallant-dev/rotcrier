@@ -21,7 +21,7 @@ function PostForm(props) {
         }
         //Create a form object containing the elements.
         const form = event.target.elements
-        await fetch('/posts', {
+        await fetch('/api/posts', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

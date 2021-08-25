@@ -46,7 +46,7 @@ function Post(props) {
             return
         }
 
-        await fetch('/posts', {
+        await fetch('/api/posts', {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -81,7 +81,7 @@ function Post(props) {
 
 
     const fetchPost = async() => {
-        const url = '/posts/'+encodeURIComponent(props.viewFocus.name)
+        const url = '/api/posts/'+encodeURIComponent(props.viewFocus.name)
         await fetch(url, {
             method: 'GET',
             headers: {
@@ -124,7 +124,7 @@ function Post(props) {
         event.preventDefault();
         //Create a form object containing the elements.
         const form = event.target.elements
-        await fetch('/posts', {
+        await fetch('/api/posts', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',

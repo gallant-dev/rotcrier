@@ -26,7 +26,7 @@ function Comment(props) {
         }
 
 
-        await fetch('/comments', {
+        await fetch('/api/comments', {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -66,7 +66,7 @@ function Comment(props) {
         event.preventDefault();
         //Create a form object containing the elements.
         const form = event.target.elements
-        await fetch('/comments', {
+        await fetch('/api/comments', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -110,7 +110,7 @@ function Comment(props) {
 
     const fetchData = async() => {
 
-        await fetch('/comments/'+comment.id, {
+        await fetch('/api/comments/'+comment.id, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

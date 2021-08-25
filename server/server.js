@@ -39,13 +39,13 @@ app.use([
         saveUninitialized: true,
         cookie: { secure: 'auto' }
     }),
-    '/static', express.static(path.join(__dirname, 'build//static'))
+    express.static(path.join(__dirname, 'build'))
 ]);
 
 
 
 //The following is HTTP requests for User data.
-app.post('/users', async(req, res) => {
+app.post('/api/users', async(req, res) => {
     const { displayName, email, password } = req.body;
     
     const newDisplayName = unzalgo.clean(displayName)
@@ -122,7 +122,7 @@ app.post('/users', async(req, res) => {
     }
 })
 
-app.post('/users/login', async(req, res) => {
+app.post('/api/users/login', async(req, res) => {
     const { displayName, password } = req.body;
 
     const newDisplayName = unzalgo.clean(displayName)
@@ -184,7 +184,7 @@ app.post('/users/login', async(req, res) => {
     }
 })
 
-app.post('/users/logout', async(req, res) => {
+app.post('/api/users/logout', async(req, res) => {
     const { displayName, sessionId } = req.body;
     sequelizeSessionStore.destroy(sessionId, (error) => {
         return res.status(error)
@@ -193,7 +193,7 @@ app.post('/users/logout', async(req, res) => {
     return res.status(200).json("Successfully logged out")
 })
 
-app.get('/users/:displayName', async(req, res) => {
+app.get('/api/users/:displayName', async(req, res) => {
     const { displayName } = req.params;
 
     const userQuery = await User.findOne({
@@ -231,7 +231,7 @@ app.get('/users/:displayName', async(req, res) => {
     }
 })
 
-app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) => {    
+app.get('/api/users/:displayName/memberships/posts/:start/:limit', async(req, res) => {    
     const { displayName, start, limit } = req.params;
 
     try {
@@ -267,7 +267,7 @@ app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) =
 
 })
 
-app.put('/users', async(req, res) => {
+app.put('/api/users', async(req, res) => {
     const { displayName, email, password, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -346,7 +346,7 @@ app.put('/users', async(req, res) => {
     })
 })
 
-app.put('/users/memberships/add/', async(req, res) => {
+app.put('/api/users/memberships/add/', async(req, res) => {
     const { displayName, title, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -410,7 +410,7 @@ app.put('/users/memberships/add/', async(req, res) => {
     })
 })
 
-app.put('/users/memberships/remove/', async(req, res) => {
+app.put('/api/users/memberships/remove/', async(req, res) => {
     const { displayName, title, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -472,7 +472,7 @@ app.put('/users/memberships/remove/', async(req, res) => {
     })
 })
 
-app.delete('/users', async(req, res) => {
+app.delete('/api/users', async(req, res) => {
     const { displayName, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -495,7 +495,7 @@ app.delete('/users', async(req, res) => {
 //The above is HTTP requests for User data.
 
 //The below is HTTP requests for Section data.
-app.post('/sections', async(req, res) => {
+app.post('/api/sections', async(req, res) => {
     const { title, description, sessionId } = req.body;
 
     sequelizeSessionStore.get(sessionId, async(error, session) => {
@@ -549,7 +549,7 @@ app.post('/sections', async(req, res) => {
     })
 })
 
-app.get('/sections/:title', async(req, res) => {
+app.get('/api/sections/:title', async(req, res) => {
     const { title } = req.params;
     try {
         const sectionQuery = await Section.findOne({
@@ -577,7 +577,7 @@ app.get('/sections/:title', async(req, res) => {
     }
 })
 
-app.get('/sections/:displayName/memberships', async(req, res) => {    
+app.get('/api/sections/:displayName/memberships', async(req, res) => {    
     const { displayName } = req.params;
     
     try {
@@ -598,7 +598,7 @@ app.get('/sections/:displayName/memberships', async(req, res) => {
 
 })
 
-app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) => {    
+app.get('/api/users/:displayName/memberships/posts/:start/:limit', async(req, res) => {    
     const { displayName, start, end } = req.params;
     
     try {
@@ -629,7 +629,7 @@ app.get('/users/:displayName/memberships/posts/:start/:limit', async(req, res) =
 
 })
 
-app.put('/sections', async(req, res) => {
+app.put('/api/sections', async(req, res) => {
     const { title, description, UserId, sessionId } = req.body;  
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -691,7 +691,7 @@ app.put('/sections', async(req, res) => {
     })
 })
 
-app.delete('/sections', async(req, res) => {
+app.delete('/api/sections', async(req, res) => {
     const { title, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -734,7 +734,7 @@ app.delete('/sections', async(req, res) => {
 //The above is HTTP requests for Section data.
 
 //The below is HTTP requests for Posts data.
-app.post('/posts', async(req, res) => {
+app.post('/api/posts', async(req, res) => {
     const { title, body, UserId, sectionTitle, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -779,7 +779,7 @@ app.post('/posts', async(req, res) => {
 
 
 
-app.get('/posts/:title', async(req, res) => {
+app.get('/api/posts/:title', async(req, res) => {
     const { title } = req.params;
     const decodedTitle = decodeURIComponent(title)
     try {
@@ -808,7 +808,7 @@ app.get('/posts/:title', async(req, res) => {
     }
 })
 
-app.get('/posts/unauth/:start/:limit', async(req, res) => {    
+app.get('/api/posts/unauth/:start/:limit', async(req, res) => {    
     const { start, limit } = req.params;
 
     try {
@@ -873,7 +873,7 @@ app.get('/posts/unauth/:start/:limit', async(req, res) => {
 })
 
 
-app.put('/posts', async(req, res) => {
+app.put('/api/posts', async(req, res) => {
     const { id, body, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -939,7 +939,7 @@ app.put('/posts', async(req, res) => {
     })
 })
 
-app.delete('/posts', async(req, res) => {
+app.delete('/api/posts', async(req, res) => {
     const { id, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -986,7 +986,7 @@ app.delete('/posts', async(req, res) => {
 //The above is HTTP requests for Post data.
 
 //The below is HTTP requests for Comment data.
-app.post('/comments', async(req, res) => {
+app.post('/api/comments', async(req, res) => {
     const { body, UserId, PostId, CommentId, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -1018,7 +1018,7 @@ app.post('/comments', async(req, res) => {
     }
 })
 
-app.get('/comments/:commentId', async(req, res) => {
+app.get('/api/comments/:commentId', async(req, res) => {
     const { commentId } = req.params;
     const comment = await Comment.findOne({
         where: {
@@ -1045,7 +1045,7 @@ app.get('/comments/:commentId', async(req, res) => {
     return res.json(comment);
 })
 
-app.get('/comments/post/:postId', async(req, res) => {
+app.get('/api/comments/post/:postId', async(req, res) => {
     const { postId } = req.params;
     const comments = await Comment.findAll({
         where: {
@@ -1059,7 +1059,7 @@ app.get('/comments/post/:postId', async(req, res) => {
     return res.json(comments);
 })
 
-app.put('/comments/', async(req, res) => {
+app.put('/api/comments/', async(req, res) => {
     const { id, body, UserId, PostId, CommentId, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -1150,7 +1150,7 @@ app.put('/comments/', async(req, res) => {
     })
 })
 
-app.delete('/comments', async(req, res) => {
+app.delete('/api/comments', async(req, res) => {
     const { id, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -1200,7 +1200,7 @@ app.delete('/comments', async(req, res) => {
 //The above is HTTP requests for Comment data.
 
 //The below is HTTP requests for Shit data.
-app.post('/shits', async(req, res) => {
+app.post('/api/shits', async(req, res) => {
     const { UserId, PostId, CommentId, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -1249,7 +1249,7 @@ app.post('/shits', async(req, res) => {
     })
 })
 
-app.get('/shits/post/:PostId', async(req, res) => {
+app.get('/api/shits/post/:PostId', async(req, res) => {
     const {  PostId } = req.params;
     const shits = await Shit.findAll({
         where: {
@@ -1259,7 +1259,7 @@ app.get('/shits/post/:PostId', async(req, res) => {
     return res.json(shits);
 })
 
-app.get('/shits/comment/:CommentId', async(req, res) => {
+app.get('/api/shits/comment/:CommentId', async(req, res) => {
     const {  CommentId } = req.params;
     const shits = await Shit.findAll({
         where: {
@@ -1269,7 +1269,7 @@ app.get('/shits/comment/:CommentId', async(req, res) => {
     return res.json(shits);
 })
 
-app.get('/shits/user/:UserId/given', async(req, res) => {
+app.get('/api/shits/user/:UserId/given', async(req, res) => {
     const { UserId } = req.params;
     const shit = await Shit.findAll({
         where: {
@@ -1279,7 +1279,7 @@ app.get('/shits/user/:UserId/given', async(req, res) => {
     return res.json(shits);
 })
 
-app.get('/shits/user/:UserId/comments/recieved', async(req, res) => {
+app.get('/api/shits/user/:UserId/comments/recieved', async(req, res) => {
     const { UserId } = req.params;
     const shits = await Shit.findAll({
         include: [{
@@ -1292,7 +1292,7 @@ app.get('/shits/user/:UserId/comments/recieved', async(req, res) => {
     return res.json(shits);
 })
 
-app.get('/shits/user/:UserId/posts/recieved', async(req, res) => {
+app.get('/api/shits/user/:UserId/posts/recieved', async(req, res) => {
     const { UserId } = req.params;
     const shit = await Shit.findAll({
         include: [{
@@ -1305,7 +1305,7 @@ app.get('/shits/user/:UserId/posts/recieved', async(req, res) => {
     return res.json(shits);
 })
 
-app.delete('/shits', async(req, res) => {
+app.delete('/api/shits', async(req, res) => {
     const { UserId, PostId, CommentId, sessionId } = req.body;
     sequelizeSessionStore.get(sessionId, async(error, session) => {
         if(error){
@@ -1341,7 +1341,7 @@ app.delete('/shits', async(req, res) => {
 //The above is HTTP requests for Shit data.
 
 //The below is HTTP requests for search.
-app.get('/search/:paramaters', async(req, res) => {
+app.get('/api/search/:paramaters', async(req, res) => {
     const { paramaters } = req.params;
     const decodedParams = '%'+decodeURIComponent(paramaters)+'%'
     try {
