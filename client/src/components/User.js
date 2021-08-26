@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Card, Row, Col, Image, Container, Button, Form } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
+import { Card, Row, Col, Container } from 'react-bootstrap'
 import Shit from './Shit'
 
 function User(props){
@@ -93,19 +94,21 @@ function User(props){
                                                 <Shit shitFor={{type: 'post', id: post.id}} />
                                             </Col>
                                             <Col xs={10} sm={10} md={10} lg={9} xl={8} onClick={() => props.onFocusChange({type: 'post', name: post.title})}>
-                                                <Card.Title>{
-                                                    post.title.length > 125 ?
-                                                    post.title.substring(0, 125)+'...' :
-                                                    post.title
-                                                    }
-                                                </Card.Title>
-                                                <Card.Text>
-                                                {
-                                                    post.body.length > 125 ?
-                                                    post.body.substring(0, 125)+'...' :
-                                                    post.body
-                                                    }
-                                                </Card.Text>
+                                                <Link to={`/post/${post.id}`} style={{all: 'unset'}}>
+                                                    <Card.Title>{
+                                                        post.title.length > 125 ?
+                                                        post.title.substring(0, 125)+'...' :
+                                                        post.title
+                                                        }
+                                                    </Card.Title>
+                                                    <Card.Text>
+                                                    {
+                                                        post.body.length > 125 ?
+                                                        post.body.substring(0, 125)+'...' :
+                                                        post.body
+                                                        }
+                                                    </Card.Text>
+                                                </Link>
                                             </Col>
                                         </Row>
 
