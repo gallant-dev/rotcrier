@@ -151,7 +151,7 @@ function Shit(props){
                 delay={{ show: 250, hide: 400 }}
                 overlay={renderTooltip(shitGiven)}>
                     <div className="text-center">
-                        <Image className="max-30px" onClick={() => clickShitHandler()} fluid src={'/'+ shitGiven ? shitIcon : noShitIcon}  />
+                        <Image className="max-30px" onClick={() => clickShitHandler()} fluid src={shitGiven ? shitIcon : noShitIcon}  />
                     </div>
                 </OverlayTrigger>
             </>
@@ -166,7 +166,7 @@ function Shit(props){
                     delay={{ show: 250, hide: 400 }}
                     overlay={renderTooltip(shitGiven)}>
                         <div>
-                            <Image className="max-25px" onClick={() => clickShitHandler()} fluid src={'/'+ shitGiven ? shitIcon : noShitIcon } />
+                            <Image className="max-25px" onClick={() => clickShitHandler()} fluid src={shitGiven ? shitIcon : noShitIcon} />
                         </div>
                     </OverlayTrigger>
                 </Col>
