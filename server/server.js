@@ -779,13 +779,12 @@ app.post('/api/posts', async(req, res) => {
 
 
 
-app.get('/api/posts/:title', async(req, res) => {
-    const { title } = req.params;
-    const decodedTitle = decodeURIComponent(title)
+app.get('/api/posts/:id', async(req, res) => {
+    const { id } = req.params;
     try {
         const post = await Post.findOne({
             where: {
-                title: decodedTitle
+                id: id
             },
             include: [Section, {
                 model: User,

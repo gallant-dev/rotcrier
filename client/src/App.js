@@ -37,7 +37,7 @@ function App() {
     newFocus.name === "Create a new section"  && history.push('/create-new-section')
     newFocus.name === "Create a new post" && history.push('/create-new-post')
     newFocus.type === "section" && history.push('/section')
-    newFocus.type === "post" && history.push('/post')
+    //newFocus.type === "post" && history.push('/post')
     newFocus.type === "user" && history.push('/user')
   }
 
@@ -93,7 +93,7 @@ function App() {
               <Route path="/section">
                 <Section viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onMakePost={defaultSectionHandler} onFocusChange={focusChangeHandler}/>
               </Route>
-              <Route path="/post">
+              <Route path="/post/:id">
                 <Post viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onFocusChange={focusChangeHandler}/>
               </Route>
               <Route path="/user">

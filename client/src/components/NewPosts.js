@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Container, Row, Col, Card } from 'react-bootstrap'
 import Shit from './Shit'
 
@@ -56,19 +57,21 @@ function NewPosts(props){
                                 <Shit shitFor={{type: 'post', id: post.id.toString()}} />
                             </Col>
                             <Col xs={10} sm={10} md={11} lg={11} xl={11} onClick={() => props.onFocusChange({type: 'post', name: post.title})}>
-                                <Card.Title>{
-                                post.title.length > 125 ?
-                                post.title.substring(0, 125)+'...' :
-                                post.title
-                                }
-                                </Card.Title>
-                                <Card.Text>
-                                {
-                                    post.body.length > 125 ?
-                                    post.body.substring(0, 125)+'...' :
-                                    post.body
+                                <Link to={`/post/${post.id}`} style={{all: 'unset'}}>
+                                    <Card.Title>{
+                                    post.title.length > 125 ?
+                                    post.title.substring(0, 125)+'...' :
+                                    post.title
                                     }
-                                </Card.Text>                          
+                                    </Card.Title>
+                                    <Card.Text>
+                                    {
+                                        post.body.length > 125 ?
+                                        post.body.substring(0, 125)+'...' :
+                                        post.body
+                                        }
+                                    </Card.Text>
+                                </Link>                          
                             </Col>
                         </Row>
                     </Card.Body>
