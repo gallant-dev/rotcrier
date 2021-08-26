@@ -265,7 +265,6 @@ function Post(props) {
                             </Row>
                             <Row className="p-2">
                                 <hr />
-                                <h6>Comments:</h6>
                                 {comments.length > 0 && comments.map( comment => <Comment section={section} post={post} key={comment.id} onFocusChange={props.onFocusChange} viewFocus={props.viewFocus} comment={comment} commentTarget={commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}
                             </Row>
                         </Col>
