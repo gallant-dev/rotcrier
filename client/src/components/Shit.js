@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Image, OverlayTrigger, Tooltip } from 'react-bootstrap'
+import { Image, OverlayTrigger, Tooltip, Row, Col } from 'react-bootstrap'
 import shitIcon from '../images/shit.png'
 import noShitIcon from '../images/no-shit.png'
 
 function Shit(props){
     const[shits, setShits] = useState([])
-    const[shitFor, setShitFor] = useState(props.shitFor)
+    const shitFor = props.shitFor
     const[shitGiven, setShitGiven] = useState(false)
 
     const fetchData = async() => {
@@ -141,22 +141,41 @@ function Shit(props){
           {!shitGiven ? 'Do you give a shit?' : 'Shit given!'}
         </Tooltip>
       );
-      
-
-    return(
-        <>
-            {<h6 className="mb-1 p-0 text-center">{shits.length}</h6>}
-            <OverlayTrigger
-            placement="right"
-            delay={{ show: 250, hide: 400 }}
-            overlay={renderTooltip(shitGiven)}>
-                <div className="text-center">
-                    <Image className="max-30px" onClick={() => clickShitHandler()} fluid src={shitGiven ? shitIcon : noShitIcon} />
-                </div>
-            </OverlayTrigger>
-        </>
-
-    );
+    
+    if(shitFor.type === 'post'){
+        return(
+            <>
+                {<h6 className="mb-1 p-0 text-center">{shits.length}</h6>}
+                <OverlayTrigger
+                placement="right"
+                delay={{ show: 250, hide: 400 }}
+                overlay={renderTooltip(shitGiven)}>
+                    <div className="text-center">
+                        <Image className="max-30px" onClick={() => clickShitHandler()} fluid src={shitGiven ? shitIcon : noShitIcon} />
+                    </div>
+                </OverlayTrigger>
+            </>
+        );
+    }
+    else {
+        return(
+            <Row>
+                <Col>
+                    <OverlayTrigger
+                    placement="right"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={renderTooltip(shitGiven)}>
+                        <div>
+                            <Image className="max-25px" onClick={() => clickShitHandler()} fluid src={shitGiven ? shitIcon : noShitIcon} />
+                        </div>
+                    </OverlayTrigger>
+                </Col>
+                <Col className="ps-0">
+                    {<span className="p-0 text-center align-middle">{shits.length}</span>}
+                </Col>
+            </Row>
+        );
+    }
 }
 
 export default Shit

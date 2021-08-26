@@ -193,11 +193,11 @@ function Comment(props) {
         {showComment &&
             <Card className="p-0">
                 <Card.Header>
-                    <Row className="justify-content-between">
-                        <Col xs={12} sm={7} md={8} lg={8} xl={8}  onClick={() => props.onFocusChange({type: 'user', name: comment.User.displayName})}>
+                    <Row xs="auto" className="justify-content-between">
+                        <Col onClick={() => props.onFocusChange({type: 'user', name: comment.User.displayName})}>
                             {comment.User.displayName}
                         </Col>
-                        <Col xs={12} sm={3} md={2} lg={2} xl={2}>
+                        <Col>
                             {comment.UserId == userId && 
                                 <>
                                     <Image className="edit p-1"
@@ -225,41 +225,43 @@ function Comment(props) {
                 </Card.Header>
                 <Card.Body className="ps-1 pe-0 pb-0">
                     <Row>
-                        <Col xs={3} sm={2} md={2} lg={2} xl={2}>
+                        <Card.Text>
+                            {!editing && <CommentBody />}
+                            {editing && 
+                            <Form onSubmit={event => submitEditHandler(event)}>
+                                <Form.Group controlId="body">
+                                    <Form.Label>Body</Form.Label>
+                                    <Form.Control required as="textarea" rows={8}>{comment.body}</Form.Control>
+                                </Form.Group>
+                    
+                                <Form.Group controlId="formButtons">
+                                    <Button variant="primary" className="m-2" onClick={event => editingButtonHandler(false)}>
+                                        Cancel
+                                    </Button>
+                    
+                                    <Button variant="primary" className="m-2" type="submit">
+                                        Submit
+                                    </Button>
+                                    <Form.Label style={{color: "red"}}>
+                                        {warning}
+                                    </Form.Label>
+                                </Form.Group>
+                            </Form>              
+                            }
+                        </Card.Text>
+                    </Row>
+                    <Row className="mt-3" xs="auto">
+                        <Col>
                             <Shit shitFor={{type: 'comment', id: comment.id}} />
                         </Col>
-                        <Col xs={9} sm={10} md={10} lg={10} xl={10} className="pe-3">
-                                <Card.Text>
-                                {!editing && <CommentBody />}
-                                {editing && 
-                                <Form onSubmit={event => submitEditHandler(event)}>
-                                    <Form.Group controlId="body">
-                                        <Form.Label>Body</Form.Label>
-                                        <Form.Control required as="textarea" rows={8}>{comment.body}</Form.Control>
-                                    </Form.Group>
-                        
-                                    <Form.Group controlId="formButtons">
-                                        <Button variant="primary" className="m-2" onClick={event => editingButtonHandler(false)}>
-                                            Cancel
-                                        </Button>
-                        
-                                        <Button variant="primary" className="m-2" type="submit">
-                                            Submit
-                                        </Button>
-                                        <Form.Label style={{color: "red"}}>
-                                            {warning}
-                                        </Form.Label>
-                                    </Form.Group>
-                                </Form>              
-                                }
-                            </Card.Text>
-
-                        </Col>
-                    </Row>
-                    <Row className="mt-3">
                         <Col>
-                        {(!showCommentForm || !(props.commentTarget.type == 'comment' &&
-                            props.commentTarget.id == comment.id)) && <Button className="mb-3" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
+                            {(!showCommentForm || !(props.commentTarget.type == 'comment' &&
+                            props.commentTarget.id == comment.id)) && <Button className="mb-1" active={false} onClick={event => commentButtonHandler(!showCommentForm)} variant="secondary">comment</Button>}
+                        </Col>
+
+                    </Row>
+                    <Row>
+                        <Col>                      
                             {(showCommentForm && (props.commentTarget.type == 'comment' &&
                             props.commentTarget.id == comment.id)) && <CommentForm post={props.post} onCommentSubmit={commentSubmitHandler} commentTarget={{type: 'comment', id: comment.id}}/>}
                             {comments.length > 0 && comments.map( comment => <Comment onFocusChange={props.onFocusChange} section={props.section} post={props.post} key={comment.id} comment={comment} commentTarget={props.commentTarget} onCommentTargetChange={commentTargetHandler}></Comment>)}

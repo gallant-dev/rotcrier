@@ -26,6 +26,11 @@
   }
 }
 
+.max-25px {
+  max-width: 25px;
+  max-height: 25px;
+}
+
 .max-30px {
   max-width: 30px;
   max-height: 30px;
