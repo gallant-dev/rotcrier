@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { Button, Row, Col, Image, Form, Container } from 'react-bootstrap'
 import editIcon from '../images/icons8-edit-48.png'
 import deleteIcon from '../images/icons8-delete-96.png'
@@ -8,6 +9,7 @@ import Shit from './Shit'
 import parse from 'html-react-parser';
 
 function Post(props) {
+    let { id } = useParams()
     const [post, setPost] = useState({})
     const [creator, setCreator] = useState({})
     const [section, setSection] = useState({})
@@ -81,7 +83,7 @@ function Post(props) {
 
 
     const fetchPost = async() => {
-        const url = '/api/posts/'+encodeURIComponent(props.viewFocus.name)
+        const url = '/api/posts/'+id
         await fetch(url, {
             method: 'GET',
             headers: {
