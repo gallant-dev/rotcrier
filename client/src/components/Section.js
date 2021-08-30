@@ -5,8 +5,9 @@ import Shit from './Shit'
 import editIcon from '../images/icons8-edit-48.png'
 import deleteIcon from '../images/icons8-delete-96.png'
 
+
 function Section(props) {
-    const name = useParams()
+    const { name } = useParams()
     const [section, setSection] = useState({})
     const [memberships, setMemberships] = useState([])
     const [moderator, setModerator] = useState({})
@@ -17,7 +18,8 @@ function Section(props) {
     const userId = props.userId;
 
     const fetchSection = async() => {
-        await fetch('/api/sections/'+encodeURIComponent(props.viewFocus.name), {
+        console.log('/api/sections/'+encodeURIComponent(name))
+        await fetch('/api/sections/'+encodeURIComponent(name), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

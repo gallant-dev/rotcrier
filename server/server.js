@@ -550,11 +550,12 @@ app.post('/api/sections', async(req, res) => {
 })
 
 app.get('/api/sections/:title', async(req, res) => {  
-    const { title } = decodeURIComponent(req.params)
+    const { title } = req.params
+    const decodedParams = decodeURIComponent(title)
     try {
         const sectionQuery = await Section.findOne({
             where: {
-                title: title
+                title: decodedParams
             },
             include: [{
                 model: User,
