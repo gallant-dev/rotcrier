@@ -56,7 +56,7 @@ function Shit(props){
         const CommentId = shitFor.type == 'comment' ? shitFor.id : null
         console.log(PostId+' '+CommentId)
         if(!UserId){
-            return window.alert("You must be logged in to give a shit!")
+            return window.alert("You must be logged in to give a shit!")    
         }
         if(!shitGiven){
             await fetch('/api/shits', {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Card, Row, Col, Container } from 'react-bootstrap'
 import Shit from './Shit'
 
@@ -126,7 +126,7 @@ function User(props){
                         </Col>
                     </Row>
                             {(comments.length > 0 ) ?
-                    comments.map( comment => 
+                        comments.map( comment => 
                         <Card key={comment.id+user.displayName} onClick={() => props.onFocusChange({type: 'post', name: comment.Post.title})}>
                             <Card.Body>
                                 <Row>
@@ -162,22 +162,24 @@ function User(props){
                 <Col xs={12} sm={12} md={6} lg={6} xl={3} className="pt-2">
                     <h2>Sections</h2>
                     {(sections.length > 0 ) ?
-                sections.map( section => 
-                <Card key={section.id+section.title} onClick={() => props.onFocusChange({type: 'section', name: section.title})}>
-                    <Card.Body>
-                        <Card.Title>{
-                            section.title.length > 125 ?
-                            section.title.substring(0, 125)+'...' :
-                            section.title
-                            }
-                        </Card.Title>
-                        <Card.Text>
-                        {
-                            section.description.length > 125 ?
-                            section.description.substring(0, 125)+'...' :
-                            section.description
-                            }
-                        </Card.Text>
+                    sections.map( section => 
+                    <Card key={section.id+section.title} onClick={() => props.onFocusChange({type: 'section', name: section.title})}>
+                        <Card.Body>
+                            <Link to={`/section/${encodeURIComponent(section.title)}`} style={{all: 'unset'}}>
+                                <Card.Title>{
+                                    section.title.length > 125 ?
+                                    section.title.substring(0, 125)+'...' :
+                                    section.title
+                                    }
+                                </Card.Title>
+                                <Card.Text>
+                                {
+                                    section.description.length > 125 ?
+                                    section.description.substring(0, 125)+'...' :
+                                    section.description
+                                    }
+                                </Card.Text>
+                            </Link>
                         </Card.Body>
                     </Card> 
                     ) : "0 found" }      
