@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Card, Row, Col, Image, Container, Button, Form } from 'react-bootstrap'
+import { useParams, Link } from 'react-router-dom'
 import Shit from './Shit'
 import editIcon from '../images/icons8-edit-48.png'
 import deleteIcon from '../images/icons8-delete-96.png'
 
 function Section(props) {
+    const name = useParams()
     const [section, setSection] = useState({})
     const [memberships, setMemberships] = useState([])
     const [moderator, setModerator] = useState({})
@@ -15,8 +17,7 @@ function Section(props) {
     const userId = props.userId;
 
     const fetchSection = async() => {
-        console.log(props.viewFocus.name)
-        await fetch('/api/sections/'+props.viewFocus.name, {
+        await fetch('/api/sections/'+encodeURIComponent(props.viewFocus.name), {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -219,7 +220,7 @@ function Section(props) {
                 {!editing && <span>{section && section.description}</span>}
                 <h6>{memberships && memberships.length} Members</h6>
                 <Button variant="secondary" onClick={event => joinButtonClickHandler(isMember)}>{!isMember ? 'become member' : 'cancel membership'}</Button>
-                {isMember && <Button variant="secondary" className="ms-3" onClick={event => makePostButtonHandler()}>make a post</Button>}
+                {isMember && <Button variant="secondary" className="ms-3" onClick={() => makePostButtonHandler()}>make a post</Button>}
                 {editing && 
                 <Form onSubmit={event => submitEditHandler(event)}>
                     <Form.Group controlId="description">
@@ -228,7 +229,7 @@ function Section(props) {
                     </Form.Group>
         
                     <Form.Group controlId="formButtons">
-                        <Button variant="primary" className="m-2" onClick={event => editingButtonHandler(false)}>
+                        <Button variant="primary" className="m-2" onClick={() => editingButtonHandler(false)}>
                             Cancel
                         </Button>
         
@@ -250,7 +251,7 @@ function Section(props) {
                         height={25}
                         src={editIcon}
                         alt="Edit"
-                        onClick={event => editingButtonHandler(true)}
+                        onClick={() => editingButtonHandler(true)}
                         />
 
                         <Image className="delete p-1"
@@ -258,7 +259,7 @@ function Section(props) {
                         height={25}
                         src={deleteIcon}
                         alt="Delete"
-                        onClick={event => deleteButtonHandler()}
+                        onClick={() => deleteButtonHandler()}
                         />
                     </>
                 }
@@ -274,19 +275,21 @@ function Section(props) {
                                 <Shit shitFor={{type: 'post', id: post.id}} />
                             </Col>
                             <Col xs={10} sm={10} md={10} lg={9} xl={8}>
-                                <Card.Title>{
-                                    post.title.length > 125 ?
-                                    post.title.substring(0, 125)+'...' :
-                                    post.title
-                                    }
-                                </Card.Title>
-                                <Card.Text>
-                                {
-                                    post.body.length > 125 ?
-                                    post.body.substring(0, 125)+'...' :
-                                    post.body
-                                    }
-                                </Card.Text>
+                                <Link to={`/post/${post.id}`} style={{all: 'unset'}}>
+                                    <Card.Title>{
+                                        post.title.length > 125 ?
+                                        post.title.substring(0, 125)+'...' :
+                                        post.title
+                                        }
+                                    </Card.Title>
+                                    <Card.Text>
+                                    {
+                                        post.body.length > 125 ?
+                                        post.body.substring(0, 125)+'...' :
+                                        post.body
+                                        }
+                                    </Card.Text>
+                                </Link>
                             </Col>
                         </Row>
 

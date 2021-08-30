@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { Button, Row, Col, Image, Form, Container } from 'react-bootstrap'
 import editIcon from '../images/icons8-edit-48.png'
 import deleteIcon from '../images/icons8-delete-96.png'
@@ -197,7 +197,9 @@ function Post(props) {
                         </Col>
                         <Col xs={9} sm={10} md={10} lg={11} xl={11}>
                             <Row>
-                                {section && <h4 className="pb-2 text-break" onClick={event => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h4>}
+                                <Link to={`/section/${encodeURIComponent(section.title)}`} style={{all: 'unset'}}>
+                                    {section && <h4 className="pb-2 text-break" onClick={() => props.onFocusChange({type: "section", name: section.title})} value={section.title}>/{section.title}/</h4>}
+                                </Link>
                             </Row>
                             <h1 className="pb-2">{post.title}</h1>
                             <Row className="pb-3 justify-content-between">

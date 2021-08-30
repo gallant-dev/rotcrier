@@ -1,6 +1,6 @@
 import { NavDropdown } from 'react-bootstrap'
 import { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 function Menu(props) {
     const alwaysVisibleSelections = [
@@ -67,20 +67,22 @@ function Menu(props) {
             }
             id="collapsible-nav-dropdown">
             {alwaysVisibleSelections.map( selection => selection !== props.viewFocus &&
-                <NavDropdown.Item key={selection.type+selection.name} onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
+                <NavDropdown.Item key={selection.type+selection.name} onClick={() => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
             )}
             {props.isLoggedIn && <NavDropdown.Divider />}
             {props.isLoggedIn && loggedInOnlySelections.map( selection => selection !== props.viewFocus &&
-                <NavDropdown.Item key={selection.type+selection.name} onClick={event => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
+                <NavDropdown.Item key={selection.type+selection.name} onClick={() => focusHandler(selection)}>{selection.name}</NavDropdown.Item> 
             )}
             {props.memberSections.length > 0 && <NavDropdown.Divider />}
             {(props.memberSections.length > 0) && props.memberSections.map( section => section !== props.viewFocus &&
-                <NavDropdown.Item key={section.type+section.name} onClick={event => focusHandler(section)}>{
-                    section.name.length > 25 ?
-                    section.name.substring(0, 25)+'...' :
-                    section.name
-                    }
-                </NavDropdown.Item> 
+                <Link to={`/section/${encodeURIComponent(section.name)}`} style={{all: 'unset'}}>
+                    <NavDropdown.Item key={section.type+section.name} onClick={() => focusHandler(section)}>{
+                        section.name.length > 25 ?
+                        section.name.substring(0, 25)+'...' :
+                        section.name
+                        }
+                    </NavDropdown.Item>
+                </Link> 
             )}
         </NavDropdown>
     );

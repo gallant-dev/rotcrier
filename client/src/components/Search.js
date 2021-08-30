@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import { Card, Row, Col, Image, Container, Button, Form } from 'react-bootstrap'
 import Shit from './Shit'
 
@@ -56,13 +57,14 @@ function Search(props){
                     <h2>Posts</h2>
                     {(posts.length > 0 ) ?
                         posts.map( post => 
-                            <Card key={post.id+post.title} onClick={event => props.onFocusChange({type: 'post', name: post.title})}>
+                            <Card key={post.id+post.title} onClick={() => props.onFocusChange({type: 'post', name: post.title})}>
                                 <Card.Body>
                                     <Row>
-                                            <Col xs={2} sm={2} md={2} lg={2} xl={2}>
-                                                <Shit shitFor={{type: 'post', id: post.id}} />
-                                            </Col>
-                                            <Col xs={10} sm={10} md={10} lg={9} xl={8}>
+                                        <Col xs={2} sm={2} md={2} lg={2} xl={2}>
+                                            <Shit shitFor={{type: 'post', id: post.id}} />
+                                        </Col>
+                                        <Col xs={10} sm={10} md={10} lg={9} xl={8}>
+                                            <Link to={`/posts/${post.id}`} style={{all: 'unset'}}>
                                                 <Card.Title>{
                                                     post.title.length > 125 ?
                                                     post.title.substring(0, 125)+'...' :
@@ -76,9 +78,9 @@ function Search(props){
                                                     post.body
                                                     }
                                                 </Card.Text>
-                                            </Col>
-                                        </Row>
-
+                                            </Link>
+                                        </Col>
+                                    </Row>
                                 </Card.Body>
                             </Card> 
                         ) : "0 found"}
@@ -87,21 +89,23 @@ function Search(props){
                     <h2>Sections</h2>
                     {(sections.length > 0 ) ?
             sections.map( section => 
-                <Card key={section.id+section.title} onClick={event => props.onFocusChange({type: 'section', name: section.title})}>
+                <Card key={section.id+section.title} onClick={() => props.onFocusChange({type: 'section', name: section.title})}>
                     <Card.Body>
-                        <Card.Title>{
-                            section.title.length > 125 ?
-                            section.title.substring(0, 125)+'...' :
-                            section.title
-                            }
-                        </Card.Title>
-                        <Card.Text>
-                        {
-                            section.description.length > 125 ?
-                            section.description.substring(0, 125)+'...' :
-                            section.description
-                            }
-                        </Card.Text>
+                        <Link to={`/section/${encodeURIComponent(section.title)}`} style={{all: 'unset'}}>
+                            <Card.Title>{
+                                section.title.length > 125 ?
+                                section.title.substring(0, 125)+'...' :
+                                section.title
+                                }
+                            </Card.Title>
+                            <Card.Text>
+                            {
+                                section.description.length > 125 ?
+                                section.description.substring(0, 125)+'...' :
+                                section.description
+                                }
+                            </Card.Text>
+                        </Link>
                     </Card.Body>
                 </Card> 
             ) : "0 found"}
@@ -109,8 +113,8 @@ function Search(props){
                 <Col xs={12} sm={12} md={6} lg={6} xl={3} className="pt-2">
                     <h2>Users</h2>
                             {(users.length > 0 ) ?
-                    users.map( user => 
-                        <Card key={user.id+user.displayName} onClick={event => props.onFocusChange({type: 'user', name: user.displayName})}>
+                        users.map( user => 
+                        <Card key={user.id+user.displayName} onClick={() => props.onFocusChange({type: 'user', name: user.displayName})}>
                             <Card.Body>
                                 <Card.Title>{
                                     user.displayName.length > 125 ?

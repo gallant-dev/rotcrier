@@ -549,8 +549,8 @@ app.post('/api/sections', async(req, res) => {
     })
 })
 
-app.get('/api/sections/:title', async(req, res) => {
-    const { title } = req.params;
+app.get('/api/sections/:title', async(req, res) => {  
+    const { title } = decodeURIComponent(req.params)
     try {
         const sectionQuery = await Section.findOne({
             where: {
