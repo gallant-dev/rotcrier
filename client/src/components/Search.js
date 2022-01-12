@@ -64,7 +64,7 @@ function Search(props){
                                             <Shit shitFor={{type: 'post', id: post.id}} />
                                         </Col>
                                         <Col xs={10} sm={10} md={10} lg={9} xl={8}>
-                                            <Link to={`/posts/${post.id}`} style={{all: 'unset'}}>
+                                            <Link to={`/post/${post.id}`} style={{all: 'unset'}}>
                                                 <Card.Title>{
                                                     post.title.length > 125 ?
                                                     post.title.substring(0, 125)+'...' :
