@@ -1,3 +1,4 @@
+
 const { sequelize, User, Section, Post, Comment, Shit } = require('./models');
 const fs = require('fs')
 var express = require('express');
@@ -10,6 +11,7 @@ var unzalgo = require('unzalgo');
 const http = require('http');
 const https = require('https');
 const forceSequelize = false;
+const forceHttps = true;
 
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/rotcrier.com/privkey.pem', 'utf8');
 const certificate = fs.readFileSync('/etc/letsencrypt/live/rotcrier.com/cert.pem', 'utf8');
@@ -816,55 +818,13 @@ app.get('/api/posts/unauth/:start/:limit', async(req, res) => {
         const currentTime = date.getTime()
 
         const posts = await Post.findAll({
-            where: {
-                updatedAt: {
-                    [Op.between]: [currentTime-(86400000*3), currentTime]
-                }
-            },
             offset: start,
             limit: limit,
-            include: Shit
+            include: Shit,
+            order: [['updatedAt', 'DESC']]
         });
-    
-        if(posts.length < limit){
-            const post = await Post.findAll({
-                where: {
-                    updatedAt: {
-                        [Op.between]: [currentTime-(86400000*7), currentTime]
-                    }
-                },
-                offset: start,
-                limit: limit,
-                include: Shit
-            });
-            if(posts.length < limit){
-                const post = await Post.findAll({
-                    where: {
-                        updatedAt: {
-                            [Op.between]: [currentTime-(86400000*30), currentTime]
-                        }
-                    },
-                    offset: start,
-                    limit: limit,
-                    include: Shit
-                });
-                if(!post){
-                    const post = await Post.findAll({
-                        offset: start,
-                        limit: limit,
-                        include: Shit
-                    });
 
-                    return res.json(post)
-                }
-
-                return res.json(post)
-            }
-            
-            return res.json(post)
-        }
-
-        return res.json(post)
+        return res.json(posts)
     }
     catch(error) {
         return res.json(error)
@@ -1410,8 +1370,9 @@ app.get('*', async(req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
+const toReroute = forceHttps ? '*' : 'nothing';
 const httpReroute = express()
-httpReroute.all('*', (req, res) => res.redirect(301, 'https://rotcrier.com'));
+httpReroute.all(toReroute, (req, res) => res.redirect(301, 'https://rotcrier.com'));
 
 const httpServer = http.createServer(httpReroute);
 const httpsServer = https.createServer(credentials, app);
