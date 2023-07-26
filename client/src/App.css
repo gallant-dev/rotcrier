@@ -36,6 +36,13 @@
   max-height: 30px;
 }
 
+.bg-dark {
+  background-color: #332421!important;
+}
+
+.bg-light {
+  background-color: #c4ae78!important;
+}
 
 .btn-primary {
   background-color: grey;
