@@ -71,35 +71,37 @@ function App() {
         <div className="container-fluid p-0">
           <Header memberSections={memberSections} viewFocus={focus} isLoggedIn={isLoggedIn} onLogin={loginHandler} onLogout={logoutHandler} onFocusChange={focusChangeHandler} onUpdateMemberSections={memberSectionsHandler} onSearch={searchHandler} />
           <div className="container-fluid p-2">
-            <Switch>
-              <Route exact path="/"> 
-                <Home viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
-              </Route>
-              <Route path="/top-posts">
-                <TopPosts viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
-              </Route>
-              <Route path="/new-posts">
-                <NewPosts viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
-              </Route>
-              <Route path="/search">
-                <Search viewFocus={focus} onFocusChange={focusChangeHandler} search={search} />
-              </Route>
-              <Route path="/create-new-section">
-                <SectionForm onFocusChange={focusChangeHandler} />
-              </Route>
-              <Route path="/create-new-post">
-                <PostForm defaultSection={defaultSection} onFocusChange={focusChangeHandler} />
-              </Route>
-              <Route path="/section/:name">
-                <Section viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onMakePost={defaultSectionHandler} onFocusChange={focusChangeHandler}/>
-              </Route>
-              <Route path="/post/:id">
-                <Post viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onFocusChange={focusChangeHandler}/>
-              </Route>
-              <Route path="/user">
-                <User viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onFocusChange={focusChangeHandler} />
-              </Route>
-            </Switch>
+            <div className="container content">
+              <Switch>
+                <Route exact path="/"> 
+                  <Home viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
+                </Route>
+                <Route path="/top-posts">
+                  <TopPosts viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
+                </Route>
+                <Route path="/new-posts">
+                  <NewPosts viewFocus={focus} memberSections={memberSections} onFocusChange={focusChangeHandler} />
+                </Route>
+                <Route path="/search">
+                  <Search viewFocus={focus} onFocusChange={focusChangeHandler} search={search} />
+                </Route>
+                <Route path="/create-new-section">
+                  <SectionForm onFocusChange={focusChangeHandler} />
+                </Route>
+                <Route path="/create-new-post">
+                  <PostForm defaultSection={defaultSection} onFocusChange={focusChangeHandler} />
+                </Route>
+                <Route path="/section/:name">
+                  <Section viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onMakePost={defaultSectionHandler} onFocusChange={focusChangeHandler}/>
+                </Route>
+                <Route path="/post/:id">
+                  <Post viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onFocusChange={focusChangeHandler}/>
+                </Route>
+                <Route path="/user">
+                  <User viewFocus={focus} isLoggedIn={isLoggedIn} userId={userId} onFocusChange={focusChangeHandler} />
+                </Route>
+              </Switch>
+            </div>
           </div>
         </div>
     </div>
