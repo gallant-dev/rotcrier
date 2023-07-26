@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Container, Card, Row, Col } from 'react-bootstrap'
-import Shit from './Shit'
+import Shit from '../components/Shit'
 
 function TopPosts(props){
     const [user, setUser] = useState()

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Card, Row, Col, Image, Container, Button, Form } from 'react-bootstrap'
-import Shit from './Shit'
+import Shit from '../components/Shit'
 
 
 function Search(props){

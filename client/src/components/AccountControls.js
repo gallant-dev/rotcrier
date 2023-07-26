@@ -1,7 +1,7 @@
 import { ButtonGroup } from 'react-bootstrap'
 import SignUp from './SignUp'
 import Login from './Login'
-import UserSettings from './UserSettings'
+import UserSettings from '../pages/UserSettings'
 
 function AccountControls(props) {
     const isLoggedIn = props.isLoggedIn;

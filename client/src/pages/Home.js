@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Container, Pagination, Card, Row, Col } from 'react-bootstrap'
-import Shit from './Shit'
+import Shit from '../components/Shit'
 
 function Home(props){
     const [user, setUser] = useState()

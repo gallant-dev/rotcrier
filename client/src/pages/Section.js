@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, Row, Col, Image, Container, Button, Form } from 'react-bootstrap'
 import { useParams, Link } from 'react-router-dom'
-import Shit from './Shit'
+import Shit from '../components/Shit'
 import editIcon from '../images/icons8-edit-48.png'
 import deleteIcon from '../images/icons8-delete-96.png'
 

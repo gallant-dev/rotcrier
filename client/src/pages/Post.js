@@ -3,9 +3,9 @@ import { useParams, Link } from 'react-router-dom'
 import { Button, Row, Col, Image, Form, Container } from 'react-bootstrap'
 import editIcon from '../images/icons8-edit-48.png'
 import deleteIcon from '../images/icons8-delete-96.png'
-import CommentForm from './CommentForm'
-import Comment from './Comment'
-import Shit from './Shit'
+import CommentForm from '../components/CommentForm'
+import Comment from '../components/Comment'
+import Shit from '../components/Shit'
 import parse from 'html-react-parser';
 
 function Post(props) {

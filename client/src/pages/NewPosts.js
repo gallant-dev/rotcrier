@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Container, Row, Col, Card } from 'react-bootstrap'
-import Shit from './Shit'
+import Shit from '../components/Shit'
 
 function NewPosts(props){
     const [user, setUser] = useState()

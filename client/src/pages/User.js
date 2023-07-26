@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Card, Row, Col, Container } from 'react-bootstrap'
-import Shit from './Shit'
+import Shit from '../components/Shit'
 
 function User(props){
     const [user, setUser] = useState({})

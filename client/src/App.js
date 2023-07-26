@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
-import Home from './components/Home'
-import TopPosts from './components/TopPosts'
-import NewPosts from './components/NewPosts'
-import Search from './components/Search'
-import SectionForm from './components/SectionForm'
-import Section from './components/Section'
-import PostForm from './components/PostForm';
-import Post from './components/Post'
-import User from './components/User'
+import Home from './pages/Home'
+import TopPosts from './pages/TopPosts'
+import NewPosts from './pages/NewPosts'
+import Search from './pages/Search'
+import SectionForm from './pages/SectionForm'
+import Section from './pages/Section'
+import PostForm from './pages/PostForm';
+import Post from './pages/Post'
+import User from './pages/User'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { clean } from 'unzalgo';
